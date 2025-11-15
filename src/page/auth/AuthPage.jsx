@@ -11,10 +11,10 @@ function AuthPage() {
   ]
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Auth Content</h1>
+    <div style={{  }}>
+      {/* <h1>Auth Content</h1> */}
 
-      <nav style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
+      {/* <nav style={{ display: "flex", gap: "15px", marginBottom: "20px" }}>
         {links.map(link => (
           <NavLink
             key={link.id}
@@ -24,9 +24,9 @@ function AuthPage() {
             {link.title}
           </NavLink>
         ))}
-      </nav>
+      </nav> */}
 
-      <main style={{  padding: "10px" }}>
+      <main style={{   }}>
         <Outlet />
       </main>
     </div>

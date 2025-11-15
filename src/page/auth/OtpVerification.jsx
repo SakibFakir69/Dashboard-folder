@@ -1,86 +1,92 @@
-
-
-import { Button, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { MuiOtpInput } from 'mui-one-time-password-input'
-import toast, { ToastBar, Toaster } from 'react-hot-toast'
-import { baseApi } from '../../utils/baseUrl'
+import { Button, TextField, Typography, Paper } from "@mui/material";
+import React, { useState } from "react";
+import { MuiOtpInput } from "mui-one-time-password-input";
+import toast, { Toaster } from "react-hot-toast";
+import { baseApi } from "../../utils/baseUrl";
+import Lottie from "lottie-react";
+import sendEmail from "../../../asset/Email.json";
 
 function OtpVerification() {
-
-
   const token = localStorage.getItem("token");
-  console.log(token);
 
+  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState("");
 
-      const [otp, setOtp] = useState('');
-      const [ email , setEmail ] = useState("")
-
-  const handleChange = (newValue) => {
-    setOtp(newValue)
-  }
-  
-
-  const handleSubmit =async (e)=>{
-
-    console.log(" otp " , otp);
-
-
-    if(otp.length==0 || otp.length<3)
-    {
-      toast("Please Enter Valid otp");
-      return;  
-    }
-
-    // call verify otp
-
-    const data ={
-      email:email,
-      otp:otp
+  const handleSubmit = async () => {
+    if (otp.length !== 6) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
     }
 
     try {
-
-        const res = await baseApi.post('/auth/me/email/conform-verify/', data , {
-          headers: {
-            Authorization: `Bearer ${token}`, // JWT token
-            'Content-Type': 'application/json',
-          },
-        });
-        const resData = res.data;
-        console.log(resData)
-        
-
-        if(resData.success)
+      const res = await baseApi.post(
+        "/auth/me/email/conform-verify/",
+        { email, otp },
         {
-          toast('Verify successfully');
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-        
+      );
+
+      if (res.data.success) toast.success("Verified successfully");
     } catch (error) {
-
-        console.log(error);
-        
+      toast.error("OTP verification failed");
     }
-
-
-  }
-
+  };
 
   return (
-    <div>
-        <Toaster/>
+    <div className="w-full h-screen flex items-center justify-center bg-blue-500 p-4">
+      <Toaster position="top-right" />
 
-        <Typography variant='h4'>Verify your otp</Typography>
+      <Paper elevation={4} className="p-8 rounded-2xl w-full max-w-md">
+        <div className="flex flex-col items-center">
 
-        <TextField onChange={(e)=> setEmail(e.target.value)} variant='outlined' placeholder='Enter your email'/>
+        
+          <Lottie animationData={sendEmail} loop className="w-56 h-56" />
 
+          <Typography variant="h5" className="font-bold text-gray-800 mb-2">
+            Verify Your OTP
+          </Typography>
 
-          <MuiOtpInput length={6}  value={otp} onChange={handleChange} className='text-2xl font-bold' />
+          <Typography className="text-gray-500 text-center mb-10">
+            Enter the 6-digit OTP sent to your email
+          </Typography>
 
-          <Button color='primary' variant='contained'  onClick={handleSubmit}>Submit Otp</Button>
-      
+          {/* Email Field */}
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className=""
+          />
+
+          {/* OTP Input */}
+          <MuiOtpInput
+            length={6}
+            value={otp}
+            onChange={setOtp}
+            className="mb-6 mt-3"
+            TextFieldsProps={{ placeholder: "-" }}
+          />
+
+          {/* Submit Button */}
+          <Button
+            fullWidth
+            variant="contained"
+            size="large"
+            onClick={handleSubmit}
+            className="py-3"
+          >
+            Verify OTP
+          </Button>
+        </div>
+      </Paper>
     </div>
-  )
+  );
 }
 
-export default OtpVerification
+export default OtpVerification;

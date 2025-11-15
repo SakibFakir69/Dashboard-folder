@@ -26,7 +26,7 @@ function AuthPage() {
         ))}
       </nav>
 
-      <main style={{ border: "2px solid red", padding: "10px" }}>
+      <main style={{  padding: "10px" }}>
         <Outlet />
       </main>
     </div>

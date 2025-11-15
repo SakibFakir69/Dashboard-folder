@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 
 function Dashboard() {
 
+  console.log("page add to dom")
+
   const nav = useLocation();
-  console.log(nav.pathname)
+  console.log(nav.pathname);
+  const usePrevPath = useRef();  /// dom manupulate in react waynav
+  usePrevPath.current=nav.pathname;
 
 
   const links = [
@@ -13,6 +17,16 @@ function Dashboard() {
     { id: 3, title: "User Overview", route: "/user-overview" },
     {id:4, title:"Setting", route:"/setting"}
   ];
+
+  useEffect(()=>{
+    
+    console.log("current path " ,nav.pathname , "prev path" , usePrevPath)
+
+  },[nav.pathname])
+
+
+
+  
 
   return (
     <div>

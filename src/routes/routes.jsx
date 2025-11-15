@@ -5,11 +5,13 @@ import SalesChart from "../page/dashboard/chart/SalesChart";
 import UserOverViewChart from "../page/dashboard/chart/UserOverViewChart";
 import Setting from "../page/dashboard/setting/Setting";
 import AuthPage from "../page/auth/AuthPage";
-import SignIn from "../page/auth/SignIn";
-import SignUp from "../page/auth/SignUp";
+
 import RestPassword from "../page/auth/RestPassword";
 import ForgotPassword from "../page/auth/ForgotPassword";
 import EmailVerification from "../page/auth/EmailVerification";
+import Login from "../page/auth/Login";
+import Register from "../page/auth/Register";
+import OtpVerification from "../page/auth/OtpVerification";
 
 export const route = createBrowserRouter([
   {
@@ -42,11 +44,11 @@ export const route = createBrowserRouter([
     children:[
         {
             path:'',
-            element:<SignIn/>
+            element:<Login/>
         },
         {
             path:'sign-up',
-            element:<SignUp/>
+            element:<Register/>
         },
         {
             path:'reset-password',
@@ -59,6 +61,10 @@ export const route = createBrowserRouter([
         {
             path:'email-verification',
             element:<EmailVerification/>
+        },
+        {
+          path:'otp-verify',
+          element:<OtpVerification/>
         }
     ]
   },

@@ -4,7 +4,8 @@ import React from "react";
 import { Button, TextField, Typography } from "@mui/material";
 import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate, useNavigation } from "react-router";
+import { useNavigate } from "react-router";
+
 
 function Register() {
   //   {

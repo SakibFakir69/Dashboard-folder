@@ -7,6 +7,12 @@ import toast, { ToastBar, Toaster } from 'react-hot-toast'
 import { baseApi } from '../../utils/baseUrl'
 
 function OtpVerification() {
+
+
+  const token = localStorage.getItem("token");
+  console.log(token);
+
+
       const [otp, setOtp] = useState('');
       const [ email , setEmail ] = useState("")
 
@@ -35,7 +41,12 @@ function OtpVerification() {
 
     try {
 
-        const res = await baseApi.post('/auth/user/forgot-password/verify-otp/', data);
+        const res = await baseApi.post('/auth/me/email/conform-verify/', data , {
+          headers: {
+            Authorization: `Bearer ${token}`, // JWT token
+            'Content-Type': 'application/json',
+          },
+        });
         const resData = res.data;
         console.log(resData)
         

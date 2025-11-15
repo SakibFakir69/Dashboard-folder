@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 
 
 function Register() {
+
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzYzMDQ5NDk0LCJpYXQiOjE3NjI0NDQ2OTQsImp0aSI6Ijg1NjYwMzE2YTg3ZDQ2YWQ5MjM2MTdlYTM2OThmNzU4IiwidXNlcm5hbWUiOiJhZG1pbjEifQ.TU_DPXMB7xnA2XazlDNHmGkc32XOqjw1R--dBiZ3ohA'
   //   {
   //     "username":"admin",
   //     "first_name": "Nur mamun",
@@ -38,7 +40,30 @@ function Register() {
     const responseData = await res.data;
     console.log(responseData);
 
+
+    localStorage.setItem("token" , responseData?.access);
+    
+
+
+    // send email varifaction
+
+    const send_otp_Email = data?.email;
+
+    const emailResponse = await baseApi.post('/auth/me/email/request-verify/', {email: send_otp_Email } , {
+       
+    headers: {
+      'Authorization': `Bearer ${responseData?.access}`,
+      'Content-Type': 'application/json'
+    }
+  
+    });
+    const emailData = await emailResponse.data;
+    console.log(emailData);
+
+    
     toast("Send OTP to your email please verify");
+
+
 
     pushToNextRoute('/auth/otp-verify')
 

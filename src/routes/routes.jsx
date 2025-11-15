@@ -12,6 +12,7 @@ import EmailVerification from "../page/auth/EmailVerification";
 import Login from "../page/auth/Login";
 import Register from "../page/auth/Register";
 import OtpVerification from "../page/auth/OtpVerification";
+import Profile from "../page/Profile";
 
 export const route = createBrowserRouter([
   {
@@ -34,6 +35,11 @@ export const route = createBrowserRouter([
         path: "setting",
         element: <Setting />,
       },
+        // profile
+  {
+    path:'/profile',
+    element:<Profile/>
+  }
     ],
   },
   // auth
@@ -65,9 +71,21 @@ export const route = createBrowserRouter([
         {
           path:'otp-verify',
           element:<OtpVerification/>
+        },
+        {
+          path:"forgot-password",
+          element:<ForgotPassword/>
         }
     ]
   },
+  // forgot password
+
+  {
+          path:"/forgot-password",
+          element:<ForgotPassword/>
+        }
+
+
 
 
 

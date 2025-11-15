@@ -4,6 +4,7 @@ import { Button, TextField, Typography, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router";
 import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router";
 
 function Register() {
   const navigate = useNavigate();
@@ -111,9 +112,8 @@ function Register() {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
-            className="mt-4 py-3 text-lg font-semibold"
             fullWidth
+            className="!mt-3 !py-3 !rounded-xl !text-lg !bg-blue-600 hover:!bg-blue-700"
           >
             Register
           </Button>

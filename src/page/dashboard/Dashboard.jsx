@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { FiHome, FiDollarSign, FiUsers, FiSettings, FiMenu, FiX, FiHeadphones } from "react-icons/fi";
 
 function Dashboard() {
@@ -73,7 +73,8 @@ function Dashboard() {
               Logout
             </button>
 
-            <img src="https://img.icons8.com/material-rounded/24/person-male.png" className="h-10 w-10 border rounded-full"/>
+            <Link to={'/profile'}>
+            <img src="https://img.icons8.com/material-rounded/24/person-male.png" className="h-10 w-10 border rounded-full"/></Link>
           </div>
         </div>
 

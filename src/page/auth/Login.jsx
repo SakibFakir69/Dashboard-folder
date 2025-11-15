@@ -3,7 +3,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 function Login() {
 
@@ -92,6 +92,9 @@ function Login() {
             )}
           </div>
 
+
+          <Link to={'/forgot-password'} className="text-black underline">Forgot Password</Link>
+
       
           <Button
             type="submit"
@@ -102,6 +105,10 @@ function Login() {
             Login
           </Button>
         </form>
+
+        <div className="mt-4">
+          <span>You haven't account <Link to={'/auth/sign-up'} className="text-green-500 "> Register</Link>  </span>
+        </div>
       </Paper>
     </div>
   );

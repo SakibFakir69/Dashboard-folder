@@ -5,9 +5,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { baseApi } from "../../utils/baseUrl";
 import Lottie from "lottie-react";
 import sendEmail from "../../../asset/Email.json";
+import { useNavigate } from "react-router";
 
 function OtpVerification() {
   const token = localStorage.getItem("token");
+  const pushToLogin = useNavigate();
 
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
@@ -30,14 +32,30 @@ function OtpVerification() {
         }
       );
 
-      if (res.data.success) toast.success("Verified successfully");
+      console.log(res?.data);
+
+      if (res.data){
+         toast.success("Verified successfully");
+
+         setTimeout(()=>{
+
+          pushToLogin('/auth/login');
+          console.log("push to login")
+
+          
+
+         },2000)
+      }
+
+
     } catch (error) {
-      toast.error("OTP verification failed");
+      toast.error("OTP verification failed", error.name);
+      console.log(error)
     }
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-blue-500 p-4">
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 p-4">
       <Toaster position="top-right" />
 
       <Paper elevation={4} className="p-8 rounded-2xl w-full max-w-md">

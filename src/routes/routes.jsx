@@ -43,7 +43,7 @@ export const route = createBrowserRouter([
     element:<AuthPage/>,
     children:[
         {
-            path:'',
+            path:'login',
             element:<Login/>
         },
         {

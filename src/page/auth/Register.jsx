@@ -47,7 +47,7 @@ function Register() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-500">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700">
       <Toaster position="top-right" reverseOrder={false} />
 
       <Paper

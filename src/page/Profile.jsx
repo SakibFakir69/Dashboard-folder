@@ -75,10 +75,7 @@ function Profile() {
         <TextField
           {...register("email", {
             required: true,
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
-            },
+          
           })}
           variant="outlined"
           className="md:w-1/2 w-full"
@@ -86,9 +83,11 @@ function Profile() {
         />
         {errors.email && (
           <span className="text-red-500">
-            {errors.email.message || "This field is required"}
+             {errors.email.message || "This field is required"}
           </span>
         )}
+
+        
 
         <div className="mt-4">
           <button

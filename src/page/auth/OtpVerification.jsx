@@ -55,7 +55,7 @@ function OtpVerification() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 p-4">
+    <div className="w-full h-screen flex items-center justify-center bg-indigo-50 p-4">
       <Toaster position="top-right" />
 
       <Paper elevation={4} className="p-8 rounded-2xl w-full max-w-md">

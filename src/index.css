@@ -1,1 +1,13 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+
+.color{
+    color: #6a6a6a;
+}
+.color-2{
+    color: #313131;
+}
+.less-color{
+    color: FF8682;
+}

@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../components/ui/Button";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
 import TextField from "@mui/material/TextField";
@@ -65,13 +65,13 @@ function Register() {
             <div className="grid grid-cols-2 gap-3">
               <TextField
                 fullWidth
-                label="First Name"
+                label="username"
                 variant="outlined"
-                {...register("first_name", {
-                  required: "First name is required",
+                {...register("username", {
+                  required: "username name is required",
                 })}
-                error={!!errors.first_name}
-                helperText={errors.first_name?.message}
+                error={!!errors.username}
+                helperText={errors.username?.message}
               />
 
               <TextField
@@ -129,9 +129,9 @@ function Register() {
 
             <p className="text-center text-sm mt-3 text-gray-700">
               Already have an account?{" "}
-              <span className="text-[#FF8682] font-medium cursor-pointer">
+              <Link to={'/auth/login'} className="text-[#FF8682] font-medium cursor-pointer">
                 Login
-              </span>
+              </Link>
             </p>
 
             {/* Divider */}

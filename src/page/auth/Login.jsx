@@ -91,10 +91,10 @@ function Login() {
               <Button title="Create Your Account" type="submit" fullWidth />
 
               <p className="text-center text-sm mt-3 text-gray-700">
-                Already have an account?{" "}
-                <span className="text-[#FF8682] font-medium cursor-pointer">
-                  Login
-                </span>
+                Already have't an account?{" "}
+                <Link to={'/auth/sign-up'} className="text-[#FF8682] font-medium cursor-pointer">
+                  Sign up
+                </Link>
               </p>
 
               {/* Divider */}
@@ -133,7 +133,7 @@ function Login() {
             </form>
           </div>
         </div>
-        <div className="hidden lg:flex flex-1 items-start justify-centerml-12 md:py-12 l pb-10 mt-8  ">
+        <div className="hidden lg:flex flex-1 items-start justify-centerml-12 md:py-12 l pb-10 mt-8 ">
           <img
             src="/Group 4.png"
             alt="Illustration"

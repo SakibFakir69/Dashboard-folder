@@ -1,15 +1,16 @@
-import { Button, TextField, Typography, Paper } from "@mui/material";
+import { TextField, Typography, Paper } from "@mui/material";
 import React, { useState } from "react";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import toast, { Toaster } from "react-hot-toast";
 import { baseApi } from "../../utils/baseUrl";
-import Lottie from "lottie-react";
-import sendEmail from "../../../asset/Email.json";
+import Button from "../../components/ui/Button";
+
 import { useNavigate } from "react-router";
+import Logo from "../../utils/logo";
 
 function OtpVerification() {
   const token = localStorage.getItem("token");
-  const pushToLogin = useNavigate();
+  const navigate = useNavigate();
 
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
@@ -31,55 +32,55 @@ function OtpVerification() {
           },
         }
       );
+      console.log(res, "res")
 
-      console.log(res?.data);
-
-      if (res.data){
-         toast.success("Verified successfully");
-
-         setTimeout(()=>{
-
-          pushToLogin('/auth/login');
-          console.log("push to login")
-
-          
-
-         },2000)
+      if (res?.data) {
+        toast.success("Verified successfully");
+        setTimeout(() => navigate("/auth/login"), 2000);
       }
-
-
     } catch (error) {
-      toast.error("OTP verification failed", error.name);
-      console.log(error)
+      toast.error("OTP verification failed");
+      console.log(error);
     }
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-indigo-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full p-4">
       <Toaster position="top-right" />
 
-      <Paper elevation={4} className="p-8 rounded-2xl w-full max-w-md">
-        <div className="flex flex-col items-center">
+      <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden">
+      
+       
 
-        
-          <Lottie animationData={sendEmail} loop className="w-56 h-56" />
+        {/* Right Side Form */}
+        <div className="flex-1 p-6 md:p-12">
+          {/* Logo */}
+          <div className="flex justify-start items-center gap-2 mb-12">
+            <Logo />
+            <h2 className="text-2xl font-bold text-gray-800">Your Logo</h2>
+          </div>
 
-          <Typography variant="h5" className="font-bold text-gray-800 mb-2">
-            Verify Your OTP
-          </Typography>
+          <div className="md:ml-8">
 
-          <Typography className="text-gray-500 text-center mb-10">
-            Enter the 6-digit OTP sent to your email
-          </Typography>
+           
+           
+          <div className="flex flex-col items-center md:items-start md:py-4">
+            <h4 className="font-semibold text-3xl text-gray-900 ">
+              Verify Your OTP
+            </h4>
+            <p className="text-gray-500 mb-6 text-center md:text-left">
+              Enter the 6-digit OTP sent to your email
+            </p>
+          </div>
 
-          {/* Email Field */}
+          {/* Email Input */}
           <TextField
             fullWidth
             variant="outlined"
             label="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className=""
+            className="-mt-10"
           />
 
           {/* OTP Input */}
@@ -87,17 +88,38 @@ function OtpVerification() {
             length={6}
             value={otp}
             onChange={setOtp}
-            className="mb-6 mt-3"
+            className="mb-6 mt-2"
             TextFieldsProps={{ placeholder: "-" }}
           />
-       
-         
 
-          <button    onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-lg text-white font-semibold shadow-sm transition-all w-full">
-              Verify OTP
-            </button>
+        
+
+        
+
+          <Button
+  title="Send OTP"
+  onClick={handleSubmit} // handle manually
+  fullWidth
+  className="bg-blue-600 hover:bg-blue-700 h-12 rounded-xl font-semibold text-lg"
+/>
+
+
+
+       
+          </div>
+
+      
+
+       
         </div>
-      </Paper>
+         <div className="hidden lg:flex flex-1 items-start justify-cente p-8 mt-10">
+          <img
+            src="/Group 4.png"
+            alt="Illustration"
+            className="object-contain w-[490px] h-[600px] object-top"
+          />
+        </div>
+      </section>
     </div>
   );
 }

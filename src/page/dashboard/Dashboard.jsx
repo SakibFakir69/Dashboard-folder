@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FiHome, FiDollarSign, FiUsers, FiSettings, FiMenu, FiX, FiHeadphones } from "react-icons/fi";
+import toast, { Toaster } from "react-hot-toast";
 
 function Dashboard() {
+
+
+  const token = localStorage.getItem("token");
+
+  const navigate=useNavigate();
+
+
   const location = useLocation();
   const prevPath = useRef(location.pathname);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,9 +26,32 @@ function Dashboard() {
     { id: 4, title: "Settings", route: "/setting", icon: <FiSettings /> },
   ];
 
+
+  useEffect(()=>{
+
+    if(!token)
+    {
+      navigate('/auth/login')
+    }
+
+  },[token])
+
+
+
+  const handleLogout = ()=>{
+     localStorage.clear("token");
+     navigate('/auth/login')
+
+     toast("User logout successfully");
+
+     console.log("hanlde log out click");
+
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
+      <Toaster/>
       <aside
         className={`
           fixed top-0 left-0 h-full bg-white shadow-lg p-6 z-50
@@ -31,7 +62,7 @@ function Dashboard() {
       >
         <div className="flex justify-between items-center mb-8 md:hidden">
           <h2 className="text-2xl font-bold text-blue-600">Dashboard</h2>
-          <button onClick={() => setIsSidebarOpen(false)}>
+          <button  onClick={() => setIsSidebarOpen(false)}>
             <FiX size={24} />
           </button>
         </div>
@@ -60,21 +91,25 @@ function Dashboard() {
   
       <div className="md:hidden fixed top-4 left-4 z-50">
         <button onClick={() => setIsSidebarOpen(true)}>
-          <FiMenu size={28} className="text-blue-500" />
+          <FiMenu size={28} className="text-blue-500 -mt-4" />
         </button>
       </div>
 
     
       <main className="flex-1 p-6   ">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-800 ">Dashboard</h1>
           <div className="flex flex-row-reverse gap-x-5">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+
+          {
+            token &&   <button onClick={handleLogout} className="bg-blue-600
+             hover:bg-blue-700 h-10 rounded-xl text-xl text-white  shadow-sm transition-all w-full">
               Logout
             </button>
+          }
 
             <Link to={'/profile'}>
-            <img src="https://img.icons8.com/material-rounded/24/person-male.png" className="h-10 w-10 border rounded-full"/></Link>
+            <img src="https://img.icons8.com/material-rounded/24/person-male.png" className="h-10 w-18 border rounded-full"/></Link>
           </div>
         </div>
 

@@ -90,17 +90,12 @@ function OtpVerification() {
             className="mb-6 mt-3"
             TextFieldsProps={{ placeholder: "-" }}
           />
+       
+         
 
-          {/* Submit Button */}
-          <Button
-            fullWidth
-            variant="contained"
-            size="large"
-            onClick={handleSubmit}
-            className="py-3"
-          >
-            Verify OTP
-          </Button>
+          <button    onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-lg text-white font-semibold shadow-sm transition-all w-full">
+              Verify OTP
+            </button>
         </div>
       </Paper>
     </div>

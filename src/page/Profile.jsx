@@ -19,7 +19,7 @@ function Profile() {
     setLoading(true);
 
     try {
-      const res = await baseApi.post("/auth/users/me/", data, {
+      const res = await baseApi.put("/auth/users/me/", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

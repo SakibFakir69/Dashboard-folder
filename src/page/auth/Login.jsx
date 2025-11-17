@@ -35,13 +35,13 @@ function Login() {
       <Toaster />
 
       <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden m-12 ">
-        <div className="flex-1 p-6 md:p-12  md:mr-2 lg:mr-10 lg:14 ">
+        <div className="flex-1 p-6 md:p-12  md:mr-2 lg:mr-10  ">
           <div className="flex justify-start items-center gap-2 mb-12 mr-8">
             <Logo />
             <h2 className="text-2xl font-bold text-gray-800">Your Logo</h2>
           </div>
 
-          <div className="  flex flex-col leading-2 ">
+          <div className="  flex flex-col leading-2 md:ml-8">
 
             <h4 className="font-semibold text-3xl text-gray-900 mb-2 mt-10">Login</h4>
             <p className="text-gray-500 mb-6">
@@ -75,8 +75,9 @@ function Login() {
               </div>
 
               {/* Terms Checkbox */}
-              <div className="flex items-center gap-2 mt-2 ">
-                <input
+              <div className="flex items-start mb-3 mt-2 flex-col ">
+                <div className="flex items-center gap-x-3">
+                  <input
                   type="checkbox"
                   className="h-4 w-4 appearance-none rounded border border-gray-400 bg-white 
              checked:bg-indigo-600 checked:border-indigo-600 
@@ -86,6 +87,7 @@ function Login() {
                 <p className="text-sm font-semibold text-gray-800">
                   Remember me
                 </p>
+                </div>
                 <br/>
                 <Link to={'/forgot-password'} className="color-2 underline mp-2">Forgot Password</Link>
               </div>

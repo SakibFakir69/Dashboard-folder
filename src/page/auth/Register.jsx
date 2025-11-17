@@ -6,9 +6,17 @@ import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
 import TextField from "@mui/material/TextField";
 import Logo from "../../utils/logo";
+import { useRegisterUserMutation, useSendOtpMutation } from "../../redux/features/api";
+
+
+
 
 function Register() {
   const navigate = useNavigate();
+  const [ registerUser,{isLoading}] = useRegisterUserMutation();
+    const [sendOtp] = useSendOtpMutation();
+
+  
 
   const {
     register,
@@ -18,17 +26,13 @@ function Register() {
 
   const onSubmit = async (data) => {
     try {
-      const res = await baseApi.post("/auth/users/register/", data);
-      const token = res.data?.access;
-      localStorage.setItem("token", token);
+      const res = await registerUser( data).unwrap();
+      const token = res?.access  || res?.data?.access;
+        localStorage.setItem("token",token);
 
-      await baseApi.post(
-        "/auth/me/email/request-verify/",
-        { email: data.email },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+
+       await sendOtp({ email: data.email, token }).unwrap();
+     
 
       toast.success("OTP sent to your email!");
       navigate("/auth/otp-verify");
@@ -36,6 +40,10 @@ function Register() {
       toast.error(error.response?.data?.detail || "Something went wrong");
     }
   };
+
+
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full">
@@ -50,7 +58,7 @@ function Register() {
           />
         </div>
 
-        <div className="flex-1 p-6 md:p-12  md:mr-2 lg:mr-10 lg:14 ">
+        <div className="flex-1 p-6 md:p-12  md:mr-2 lg:mr-4 ">
           <div className="flex justify-end items-center gap-2 mb-8 mr-8">
             <Logo />
             <h2 className="text-2xl font-bold text-gray-800">Your Logo</h2>

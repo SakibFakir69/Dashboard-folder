@@ -1,0 +1,83 @@
+// store/apiSlice.js
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export const api = createApi({
+  reducerPath: "userAuth",
+  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8020" }),
+  endpoints: (builder) => ({
+    // Register
+    registerUser: builder.mutation({
+      query: (data) => ({
+        url: "/auth/users/register/",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    // Login
+    loginUser: builder.mutation({
+      query: (data) => ({
+        url: "/auth/users/login/",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    // Send OTP
+    sendOtp: builder.mutation({
+      query: ({ email, token }) => ({
+        url: "/auth/me/email/request-verify/",
+        method: "POST",
+        body: { email },
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
+
+    // Verify OTP
+    verifyOtp: builder.mutation({
+      query: ({ email, otp, token }) => ({
+        url: "/auth/me/email/conform-verify/",
+        method: "POST",
+        body: { email, otp },
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
+
+    // Forgot Password
+    forgotPasswordSendOtp: builder.mutation({
+      query: (email) => ({
+        url: "/auth/user/forgot-password/send-otp/",
+        method: "POST",
+        body: { email },
+      }),
+    }),
+
+    forgotPasswordVerifyOtp: builder.mutation({
+      query: ({ email, otp }) => ({
+        url: "/auth/user/forgot-password/verify-otp/",
+        method: "POST",
+        body: { email, otp },
+      }),
+    }),
+
+    /// reset password
+
+    resetPassword: builder.mutation({
+      query: ({ email, otp, new_password }) => ({
+        url: "/auth/user/forgot-password/reset/",
+        method: "POST",
+        body: { email, otp, new_password },
+      }),
+    }),
+  }),
+});
+
+export const {
+  useRegisterUserMutation,
+  useLoginUserMutation,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+  useForgotPasswordSendOtpMutation,
+  useForgotPasswordVerifyOtpMutation,
+  useResetPasswordMutation,
+} = api;

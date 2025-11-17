@@ -38,15 +38,15 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-indigo-50">
+    <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full">
       <Toaster />
 
-      <section className="flex w-full max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden m-12 ">
+      <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden m-12 ">
         <div className="hidden lg:flex flex-1 items-start justify-centerml-12 md:py-12 l pb-10 ">
           <img
             src="/Group 4.png"
             alt="Illustration"
-            className="object-contain  w-[490px]  h-[540px]"
+            className="object-contain  w-[490px]  h-[520px]"
           />
         </div>
 

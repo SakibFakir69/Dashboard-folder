@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import toast, { Toaster } from "react-hot-toast";
 import { baseApi } from "../../utils/baseUrl";
-import Button from "../../components/ui/Button";
+
 
 import { useNavigate } from "react-router";
 import Logo from "../../utils/logo";
-
+import Button from "../../components/ui/Button";
 function OtpVerification() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();

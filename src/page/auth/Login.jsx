@@ -75,7 +75,7 @@ function Login() {
               </div>
 
               {/* Terms Checkbox */}
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-2 ">
                 <input
                   type="checkbox"
                   className="h-4 w-4 appearance-none rounded border border-gray-400 bg-white 
@@ -86,9 +86,13 @@ function Login() {
                 <p className="text-sm font-semibold text-gray-800">
                   Remember me
                 </p>
+                <br/>
+                <Link to={'/forgot-password'} className="color-2 underline mp-2">Forgot Password</Link>
               </div>
+              
+            
 
-              <Button title="Create Your Account" type="submit" fullWidth />
+              <Button  title="Create Your Account" type="submit" fullWidth />
 
               <p className="text-center text-sm mt-3 text-gray-700">
                 Already have't an account?{" "}

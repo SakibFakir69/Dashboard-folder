@@ -1,9 +1,11 @@
-import { Button, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import React, { useState } from "react";
-import { baseApi } from "../../utils/baseUrl";
-import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { MuiOtpInput } from "mui-one-time-password-input";
+import toast, { Toaster } from "react-hot-toast";
+import { baseApi } from "../../utils/baseUrl";
+import { useNavigate } from "react-router";
+import Logo from "../../utils/logo";
+import Button from "../../components/ui/Button";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -16,27 +18,15 @@ function ForgotPassword() {
   const navigate = useNavigate();
 
   // Step 1: Send OTP
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-
-    if (!email) {
-      toast.error("Email is required");
-      return;
-    }
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      toast.error("Please enter a valid email");
-      return;
-    }
+  const handleSendOtp = async () => {
+    if (!email) return toast.error("Email is required");
+    if (!/^\S+@\S+\.\S+$/.test(email)) return toast.error("Enter a valid email");
 
     setLoading(true);
     try {
       const res = await baseApi.post("/auth/user/forgot-password/send-otp/", { email });
-
-      if (res.status === 200) {
-        toast.success("OTP sent to your email");
-        setStep("otp");
-      }
+      toast.success("OTP sent to your email");
+      setStep("otp");
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Failed to send OTP");
     } finally {
@@ -46,22 +36,13 @@ function ForgotPassword() {
 
   // Step 2: Verify OTP
   const handleVerifyOtp = async () => {
-    if (otp.length !== 6 || !/^\d+$/.test(otp)) {
-      toast.error("Enter a valid 6-digit OTP");
-      return;
-    }
+    if (otp.length !== 6 || !/^\d+$/.test(otp)) return toast.error("Enter valid 6-digit OTP");
 
     setLoading(true);
     try {
-      const res = await baseApi.post("/auth/user/forgot-password/verify-otp/", {
-        email,
-        otp,
-      });
-
-      if (res?.data?.detail) {
-        toast.success("OTP Verified Successfully");
-        setStep("reset");
-      }
+      const res = await baseApi.post("/auth/user/forgot-password/verify-otp/", { email, otp });
+      toast.success("OTP Verified Successfully");
+      setStep("reset");
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Invalid or expired OTP");
     } finally {
@@ -71,34 +52,15 @@ function ForgotPassword() {
 
   // Step 3: Reset Password
   const handleResetPassword = async () => {
-
-    console.log("hanlde reset password")
-    if (!password) {
-      toast.error("Password is required");
-      return;
-    }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+    if (!password) return toast.error("Password is required");
+    if (password.length < 6) return toast.error("Password must be at least 6 characters");
+    if (password !== confirmPassword) return toast.error("Passwords do not match");
 
     setLoading(true);
     try {
-      const res = await baseApi.post("/auth/user/forgot-password/reset/", {
-        email,
-        otp,
-        new_password: password,
-      });
-      console.log(res)
-
-      if (res?.status === 200) {
-        toast.success("Password reset successfully! Redirecting to login...");
-        setTimeout(() => navigate("/"), 1500); 
-      }
+      await baseApi.post("/auth/user/forgot-password/reset/", { email, otp, new_password: password });
+      toast.success("Password reset successfully! Redirecting...");
+      setTimeout(() => navigate("/auth/login"), 1500);
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Failed to reset password");
     } finally {
@@ -106,127 +68,180 @@ function ForgotPassword() {
     }
   };
 
-  console.log(step)
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 p-4">
-      
-      <Toaster/>
-      {step === "email" && (
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg"
-        >
-          <div className="flex justify-center items-center flex-col mb-6">
-            <img
-              src="/20944201.jpg"
-              alt="Forgot Password"
-              className="w-48 h-48 object-contain"
-            />
-            <p className="text-gray-600 text-sm -mt-4">Enter your registered email</p>
+      <Toaster position="top-right" />
+
+      <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden">
+        
+
+     
+        <div className="flex-1 p-6 md:p-12">
+          {/* Logo */}
+          <div className="flex justify-start items-center gap-2 mb-12">
+            <Logo />
+            <h2 className="text-2xl font-bold text-gray-800">Your Logo</h2>
           </div>
 
-          <TextField
-            type="email"
-            placeholder="your@email.com"
-            className="w-full"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={loading}
-            autoFocus
-          />
+          {/* Content */}
+          {step === "email" && (
 
-          
+            <div className="flex flex-col space-y-4 md:ml-8">
+              <h4 className="font-semibold text-3xl text-gray-900 mb-2">Forgot Password</h4>
+              <p className="text-gray-500 mb-6">Don’t worry, happens to all of us. Enter your email below to recover your password</p>
+
+              <div className="flex flex-col md:gap-y-6 gap-y-3">
+                <TextField
+                fullWidth
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="p-3"
+              
+              />
+
+              
+
+              <Button title="Send Otp" onClick={handleSendOtp}/>
+
+              </div>
+               {/* Divider */}
+              <div className="py-1">
+                <div className="divider before:bg-gray-300 after:bg-gray-300">
+                  <span className="text-gray-500">Or Sign up with</span>
+                </div>
+              </div>
+
+              {/* Social Icons */}
+              <div className="flex gap-3 w-full">
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/color/48/facebook-new.png"
+                    alt="facebook-new"
+                  />
+                </div>
+
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/color/48/google-logo.png"
+                    alt="google-logo"
+                  />
+                </div>
+
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/material-rounded/24/mac-os.png"
+                    alt="mac-os"
+                  />
+                </div>
+              </div>
+              
+            </div>
+          )}
+
+          {step === "otp" && (
+            <div className="flex flex-col space-y-4 md:ml-8">
+
+              <h4 className="font-semibold text-3xl text-gray-900 mb-2 text-left">Verify OTP</h4>
+              <p className="text-gray-500 mb-6 text-left">
+                We sent a 6-digit code to <strong>{email}</strong>
+              </p>
+
+              <MuiOtpInput
+                length={6}
+                value={otp}
+                onChange={setOtp}
+                className="mb-6"
+              />
+
+              
+
+              <Button title={"Verify OTP"} onClick={handleVerifyOtp}/>
 
 
-          <button       onClick={handleSendOtp}
-            disabled={loading} className="bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-lg text-white font-semibold shadow-sm transition-all w-full mt-2">
-              {loading ? "Sending OTP..." : "Send OTP"}
-            </button>
+
+               {/* Divider */}
+              <div className="py-1">
+                <div className="divider before:bg-gray-300 after:bg-gray-300">
+                  <span className="text-gray-500">Or Sign up with</span>
+                </div>
+              </div>
+
+              {/* Social Icons */}
+              <div className="flex gap-3 w-full">
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/color/48/facebook-new.png"
+                    alt="facebook-new"
+                  />
+                </div>
+
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/color/48/google-logo.png"
+                    alt="google-logo"
+                  />
+                </div>
+
+                <div className="flex-1 flex justify-center border border-blue-600 rounded-lg p-2 hover:shadow transition">
+                  <img
+                    className="w-7 h-7"
+                    src="https://img.icons8.com/material-rounded/24/mac-os.png"
+                    alt="mac-os"
+                  />
+                </div>
+              </div>
 
 
-        </form>
-      )}
+            </div>
+          )}
 
-  
-      {step === "otp" && (
-        <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
-          <h2 className="text-center text-2xl font-bold text-gray-800 mb-2">
-            Check Your Email
-          </h2>
-          <p className="text-center text-sm text-gray-600 mb-6">
-            We sent a 6-digit code to <strong>{email}</strong>
-          </p>
+          {step === "reset" && (
+            <div className="flex flex-col space-y-4 md:ml-8">
+              <h4 className="font-semibold text-3xl text-gray-900 mb-2 text-left">Set a password</h4>
+              <p className="text-gray-500 mb-6 text-left">Your previous password has been reseted. Please set a new password for your account.</p>
 
-          <MuiOtpInput
-            length={6}
-            value={otp}
-            onChange={setOtp}
-            className="mb-6"
-           
-          />
+              
+              <div className="flex gap-y-4 flex-col">
+                <TextField
+                fullWidth
+                type="password"
+                placeholder="New password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+              />
+              <TextField
+                fullWidth
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={loading}
+              />
 
-         
-          <button  onClick={handleVerifyOtp}
-            disabled={loading || otp.length !== 6} className="bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-lg text-white font-semibold shadow-sm transition-all w-full">
-                {loading ? "Verifying..." : "Verify OTP"}
-            </button>
-
-          <p className="text-center text-xs text-gray-500 mt-4">
-            Didn't receive?{" "}
-            <button
-             
-              className="text-blue-600 hover:underline font-medium"
-              disabled={loading}
-            >
-              Resend
-            </button>
-
-            
-          </p>
+              
+              <Button title={"Change Password"} onClick={handleResetPassword}/>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-
-      {/*  Reset Password */}
-      {step === "reset" && (
-        <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg space-y-4">
-          <h2 className="text-center text-2xl font-bold text-gray-800">
-            Set New Password
-          </h2>
-          <p className="text-center text-sm text-gray-600">
-            Your OTP is verified. Now choose a strong password.
-          </p>
-
-          <div className="flex flex-col gap-y-2">
-            <TextField
-            type="password"
-            placeholder="New password"
-            className=""
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
+        {/* Left Illustration */}
+        <div className="hidden lg:flex flex-1 items-start justify-center p-8">
+          <img
+            src="/Rectangle 20.png"
+            alt="Forgot Password"
+            className="object-contain w-[490px] h-[600px] object-top"
           />
-
-          <TextField
-          
-            type="password"
-            placeholder="Confirm new password"
-            fullWidth
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            disabled={loading}
-          />
-
-          
-
-          <button  onClick={handleResetPassword}
-            disabled={loading || !password || password !== confirmPassword} className="bg-blue-600 hover:bg-blue-700 mt-2 h-12 rounded-xl text-lg text-white font-semibold shadow-sm transition-all">
-              {loading ? "Changing Password..." : "Change Password"}
-            </button>
-          </div>
         </div>
-      )}
+      </section>
     </div>
   );
 }

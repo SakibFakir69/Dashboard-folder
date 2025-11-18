@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { TextField, Box } from "@mui/material";
-import { baseApi } from "../../utils/baseUrl";
+
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Link } from "react-router";
 import Logo from "../../utils/logo";
@@ -25,8 +25,8 @@ const onSubmit = async (data) => {
 
     console.log(res);
 
-    localStorage.setItem("token", res.access);
-    localStorage.setItem("refToken", res.refresh);
+    localStorage.setItem("token", res?.access);
+    localStorage.setItem("refToken", res?.refresh);
 
     toast.success("Login Successful");
     navigate("/");

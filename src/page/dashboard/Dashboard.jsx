@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import { FiHome, FiDollarSign, FiUsers, FiSettings, FiMenu, FiX, FiHeadphones } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
 import App from "../../App";
+import { getValidAccessToken } from "../../utils/auth";
 
 function Dashboard() {
 
@@ -17,7 +18,7 @@ function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const token = localStorage.getItem("token");
-  const refReshToken =localStorage.getItem("refToken")
+ 
 
   const navigate=useNavigate();
 
@@ -32,22 +33,23 @@ function Dashboard() {
     { id: 4, title: "Settings", route: "/setting", icon: <FiSettings /> },
   ];
 
+  useEffect(() => {
+  const checkTokens = async () => {
+    let validToken = await getValidAccessToken();
 
-  useEffect(()=>{
-
-    // if token empty then cann refresh token and add loading state 
-
-    if(token && refReshToken){
-      setLoading(false);
+    if (!validToken) {
+      toast.error("Session expired. Please login again.");
+      localStorage.clear();
+      navigate("/auth/login");
+      return;
     }
 
+    setLoading(false);
+  };
 
-    if(!token && !refReshToken )
-    {
-      navigate('/auth/login')
-    }
+  checkTokens();
+}, [navigate]);
 
-  },[token , navigate])
 
 
 

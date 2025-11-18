@@ -1,13 +1,19 @@
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 
 export const api = createApi({
   reducerPath: "userAuth",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8020" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "http://127.0.0.1:8020",
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      headers.set("Content-Type", "application/json");
+      return headers;
+    },
+  }),
 
-
-  
   endpoints: (builder) => ({
     // Register
     registerUser: builder.mutation({
@@ -29,21 +35,21 @@ export const api = createApi({
 
     // Send OTP
     sendOtp: builder.mutation({
-      query: ({ email, token }) => ({
+      query: ({ email }) => ({
         url: "/auth/me/email/request-verify/",
         method: "POST",
         body: { email },
-        headers: { Authorization: `Bearer ${token}` },
+        // removed manual headers — prepareHeaders handles token
       }),
     }),
 
     // Verify OTP
     verifyOtp: builder.mutation({
-      query: ({ email, otp, token }) => ({
+      query: ({ email, otp }) => ({
         url: "/auth/me/email/conform-verify/",
         method: "POST",
         body: { email, otp },
-        headers: { Authorization: `Bearer ${token}` },
+        // removed manual headers — prepareHeaders handles token
       }),
     }),
 
@@ -64,8 +70,7 @@ export const api = createApi({
       }),
     }),
 
-    /// reset password
-
+    // Reset password
     resetPassword: builder.mutation({
       query: ({ email, otp, new_password }) => ({
         url: "/auth/user/forgot-password/reset/",
@@ -74,68 +79,57 @@ export const api = createApi({
       }),
     }),
 
+    // Change password
+changePassword: builder.mutation({
+  query: ({ old_password, new_password, token }) => ({
+    url: "/auth/users/me/change-password/",
+    method: "POST",
+    body: { old_password, new_password },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  }),
+}),
 
-    /// change password 
 
-    changePassword: builder.mutation({
-
-      query: (data) => ({
-        url: "/auth/users/me/change-password/",
-        method: "POST",
-        body: data
-      })
-
-    })
-    ,
+    // Update profile
     updateProfile: builder.mutation({
       query: ({ data, token }) => ({
         url: "/auth/users/me/",
         method: "PUT",
         body: data,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }),
     }),
 
 
-    // handle resend password
-
+    // Resend password OTP
     resendPassword: builder.mutation({
-      query: ({ email, token }) => ({
-        url: '/auth/me/email/request-verify/',
+      query: ({ email }) => ({
+        url: "/auth/me/email/request-verify/",
         method: "POST",
         body: { email },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+
+      }),
     }),
-    // refresh token 
-    // /auth/users/login/refresh/
 
-    refreshToken:builder.mutation({
-      query:(refreshToken)=>({
-
-
-        url:'/auth/users/login/refresh/',
-        method:"POST",
-
-        body:refreshToken
-
-      })
-    })
-
-
-
-
-
-
+    // Refresh token
+    refreshToken: builder.mutation({
+      query: (refreshToken) => ({
+        url: "/auth/users/login/refresh/",
+        method: "POST",
+        body: refreshToken,
+      }),
+    }),
   }),
 });
 
 export const {
   useResendPasswordMutation,
-
-
   useRegisterUserMutation,
   useLoginUserMutation,
   useSendOtpMutation,
@@ -145,5 +139,4 @@ export const {
   useResetPasswordMutation,
   useChangePasswordMutation,
   useUpdateProfileMutation,
-
 } = api;

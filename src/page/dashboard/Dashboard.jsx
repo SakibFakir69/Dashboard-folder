@@ -47,7 +47,7 @@ function Dashboard() {
       navigate('/auth/login')
     }
 
-  },[token])
+  },[token , navigate])
 
 
 

@@ -15,7 +15,7 @@ import { jwtDecode } from "jwt-decode";
 function OtpVerification() {
   const token = localStorage.getItem("token");
   const [resendPassword] = useResendPasswordMutation();
-  const decoded = jwtDecode(token) || "" || {};
+  const decoded = jwtDecode(token) || "sdf"
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState("");

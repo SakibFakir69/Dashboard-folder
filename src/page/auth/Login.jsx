@@ -66,7 +66,7 @@ const onSubmit = async (data) => {
                     required: "username is required",
                   })}
                   error={!!errors.username}
-                  helperText={errors.username}
+                  helperText={errors.username?.message}
                 />
 
                 <TextField

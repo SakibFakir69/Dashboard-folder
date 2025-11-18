@@ -13,30 +13,41 @@ function Setting() {
   const [changePassword] = useChangePasswordMutation();
 
   const handleChange = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
 
-    const token = localStorage.getItem("token");
-    if(!token) return;
-    
+  const token = localStorage.getItem("token");
+  console.log(token)
+  if (!token) {
+    toast.error("You must be logged in to change your password.");
+    return;
+  }
 
-    try {
-      const res = await changePassword({
-        old_password: oldPassword,
-        new_password: newPassword,
-      }).unwrap(); 
-      console.log(res);
+  if (!oldPassword || !newPassword) {
+    toast.error("Both old and new passwords are required.");
+    return;
+  }
 
-      toast.success("Password changed successfully");
-      setOldPassword("");
-      setNewPassword("");
-    } catch (error) {
-      toast.error(error?.data?.detail || "Failed to change password");
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const res = await changePassword({
+      old_password: oldPassword,
+      new_password: newPassword,
+      token, // <-- pass token here
+    }).unwrap();
+
+
+
+    toast.success("Password changed successfully!");
+    setOldPassword("");
+    setNewPassword("");
+    console.log(res , token);
+  } catch (error) {
+    toast.error(error?.data?.detail || "Failed to change password");
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex flex-col items-center justify-center w-full p-4">

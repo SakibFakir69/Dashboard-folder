@@ -14,19 +14,12 @@ function Profile() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-
   const onSubmit = async (data) => {
-
-
-    const token = localStorage.getItem("token");
-    if(!token) return;
-
+    if (!token) return toast.error("Please log in first.");
 
     setLoading(true);
-
     try {
-      const res = await updateProfile({ data, token }).unwrap();
-
+      const res = await updateProfile({data, token}).unwrap();
       toast.success("Profile updated successfully");
       console.log(res);
     } catch (error) {
@@ -52,9 +45,8 @@ function Profile() {
         <img
           className="h-18 w-18 rounded-full  border border-blue-600"
           src="https://img.icons8.com/material-rounded/24/person-male.png"
-        
         />
-       
+
         <TextField
           {...register("username", { required: true })}
           variant="outlined"

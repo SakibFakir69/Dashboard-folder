@@ -6,17 +6,15 @@ import { baseApi } from "../../utils/baseUrl";
 import toast, { Toaster } from "react-hot-toast";
 import TextField from "@mui/material/TextField";
 import Logo from "../../utils/logo";
-import { useRegisterUserMutation, useSendOtpMutation } from "../../redux/features/api";
-
-
-
+import {
+  useRegisterUserMutation,
+  useSendOtpMutation,
+} from "../../redux/features/api";
 
 function Register() {
   const navigate = useNavigate();
-  const [ registerUser,{isLoading}] = useRegisterUserMutation();
-    const [sendOtp] = useSendOtpMutation();
-
-  
+  const [registerUser] = useRegisterUserMutation();
+  const [sendOtp] = useSendOtpMutation();
 
   const {
     register,
@@ -26,13 +24,11 @@ function Register() {
 
   const onSubmit = async (data) => {
     try {
-      const res = await registerUser( data).unwrap();
-      const token = res?.access  || res?.data?.access;
-        localStorage.setItem("token",token);
+      const res = await registerUser(data).unwrap();
+      const token = res?.access || res?.data?.access;
+      localStorage.setItem("token", token);
 
-
-       await sendOtp({ email: data.email, token }).unwrap();
-     
+      await sendOtp({ email: data.email, token }).unwrap();
 
       toast.success("OTP sent to your email!");
       navigate("/auth/otp-verify");
@@ -41,27 +37,24 @@ function Register() {
     }
   };
 
-
-
-
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full">
       <Toaster />
 
-      <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden m-12 ">
-        <div className="hidden lg:flex flex-1 items-start justify-centerml-12 md:py-12 l pb-10 ">
+      <section className="flex w-full md:max-w-[1242px] bg-white rounded-xl shadow-lg overflow-hidden m-14 border ">
+
+        <div className="hidden  lg:flex flex-1 items-start justify-centerml-12 md:py-12  pb-10 ">
           <img
-            src="/Group 4.png"
+            src="/register.png"
             alt="Illustration"
             className="object-contain  w-[490px]  h-[520px]"
           />
         </div>
 
-        <div className="flex-1 p-6 md:p-12  md:mr-2 lg:mr-4 ">
-          <div className="flex justify-end items-center gap-2 mb-8 mr-8">
-            <Logo />
-            <h2 className="text-2xl font-bold text-gray-800">Your Logo</h2>
+        <div className="md:flex-1 p-6 md:p-12  md:mr-2 lg:mr-10  ">
+          <div className="flex justify-end items-center gap-2 mb-10 mr-8 md:-mt-5 ">
+            <Logo  />
+            <h2 className="text-2xl font-bold text-gray-800 ">Your Logo</h2>
           </div>
 
           <h4 className="font-semibold text-3xl text-gray-900 mb-2">Sign Up</h4>
@@ -70,7 +63,7 @@ function Register() {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid md:grid-cols-2 gap-3">
               <TextField
                 fullWidth
                 label="username"
@@ -137,7 +130,10 @@ function Register() {
 
             <p className="text-center text-sm mt-3 text-gray-700">
               Already have an account?{" "}
-              <Link to={'/auth/login'} className="text-[#FF8682] font-medium cursor-pointer">
+              <Link
+                to={"/auth/login"}
+                className="text-[#FF8682] font-medium cursor-pointer"
+              >
                 Login
               </Link>
             </p>

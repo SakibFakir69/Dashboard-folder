@@ -6,9 +6,12 @@ import toast, { Toaster } from "react-hot-toast";
 import { useNavigate, Link } from "react-router";
 import Logo from "../../utils/logo";
 import Button from "../../components/ui/Button";
+import { useLoginUserMutation } from "../../redux/features/api";
 
 function Login() {
   const navigate = useNavigate();
+
+  const [loginUser] = useLoginUserMutation();
 
   const {
     register,
@@ -16,19 +19,22 @@ function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
-    try {
-      const res = await baseApi.post("/auth/users/login/", data);
-      const token = res.data?.access;
-      localStorage.setItem("token", token);
-      localStorage.setItem("refToken", res.data?.refresh);
+const onSubmit = async (data) => {
+  try {
+    const res = await loginUser(data).unwrap();
 
-      toast.success("Login Successful");
-      navigate("/");
-    } catch (error) {
-      toast.error(error.response?.data?.detail || "Invalid credentials");
-    }
-  };
+    console.log(res);
+
+    localStorage.setItem("token", res.access);
+    localStorage.setItem("refToken", res.refresh);
+
+    toast.success("Login Successful");
+    navigate("/");
+  } catch (error) {
+    toast.error(error?.data?.detail || "Invalid credentials");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full">
@@ -48,8 +54,8 @@ function Login() {
               Login to access your travelwise account
             </p>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-              <div className="flex flex-col gap-3">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 ">
+              <div className="flex flex-col gap-y-2">
                 <TextField
                   fullWidth
                   label="username"
@@ -94,7 +100,7 @@ function Login() {
               
             
 
-              <Button  title="Create Your Account" type="submit" fullWidth />
+              <Button  title="Login Your Account" type="submit" fullWidth />
 
               <p className="text-center text-sm mt-3 text-gray-700">
                 Already have't an account?{" "}

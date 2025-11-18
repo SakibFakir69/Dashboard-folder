@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { FiHome, FiDollarSign, FiUsers, FiSettings, FiMenu, FiX, FiHeadphones } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
+import App from "../../App";
 
 function Dashboard() {
 
@@ -112,6 +113,7 @@ function Dashboard() {
             <img src="https://img.icons8.com/material-rounded/24/person-male.png" className="h-10 w-18 border rounded-full"/></Link>
           </div>
         </div>
+        <App/>
 
         <div className="bg-white p-6 rounded-xl shadow min-h-[500px]">
           <Outlet />

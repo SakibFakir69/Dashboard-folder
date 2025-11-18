@@ -25,6 +25,8 @@ const onSubmit = async (data) => {
 
     console.log(res);
 
+    // if email not verify can not access
+
     localStorage.setItem("token", res?.access);
     localStorage.setItem("refToken", res?.refresh);
 

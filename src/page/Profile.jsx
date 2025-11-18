@@ -16,6 +16,12 @@ function Profile() {
   } = useForm();
 
   const onSubmit = async (data) => {
+
+
+    const token = localStorage.getItem("token");
+    if(!token) return;
+
+
     setLoading(true);
 
     try {
@@ -35,7 +41,7 @@ function Profile() {
     <div className="flex justify-center items-center flex-col w-full p-4">
       <Toaster />
 
-      <h3 className="md:text-3xl text-2xl font-semibold">
+      <h3 className="md:text-3xl text-2xl font-semibold color-2">
         Update your profile
       </h3>
 
@@ -44,9 +50,11 @@ function Profile() {
         className="flex flex-col w-full gap-y-4 mt-10 justify-center mx-auto items-center"
       >
         <img
-          className="h-20 w-20 rounded-full "
+          className="h-18 w-18 rounded-full  border border-blue-600"
           src="https://img.icons8.com/material-rounded/24/person-male.png"
+        
         />
+       
         <TextField
           {...register("username", { required: true })}
           variant="outlined"

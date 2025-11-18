@@ -1,6 +1,7 @@
 
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+
 export const api = createApi({
   reducerPath: "userAuth",
   baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8020" }),
@@ -73,24 +74,40 @@ export const api = createApi({
 
     /// change password 
 
-    changePassword :builder.mutation({
+    changePassword: builder.mutation({
 
-      query:(data)=> ({
+      query: (data) => ({
         url: "/auth/users/me/change-password/",
-        method:"POST",
-        body:data
+        method: "POST",
+        body: data
       })
 
     })
     ,
     updateProfile: builder.mutation({
-  query: ({ data, token }) => ({
-    url: "/auth/users/me/",
-    method: "PUT",
-    body: data,
-    headers: { Authorization: `Bearer ${token}` },
-  }),
-}),
+      query: ({ data, token }) => ({
+        url: "/auth/users/me/",
+        method: "PUT",
+        body: data,
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    }),
+
+
+    // handle resend password
+
+    resendPassword: builder.mutation({
+  query: ({ email, token }) => ({
+    url: '/auth/me/email/request-verify/',
+    method: "POST",
+    body: { email },
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+})
+
+
 
 
 
@@ -99,13 +116,17 @@ export const api = createApi({
 });
 
 export const {
-    useRegisterUserMutation,
+  useResendPasswordMutation,
+
+
+  useRegisterUserMutation,
   useLoginUserMutation,
   useSendOtpMutation,
   useVerifyOtpMutation,
   useForgotPasswordSendOtpMutation,
   useForgotPasswordVerifyOtpMutation,
   useResetPasswordMutation,
-  useChangePasswordMutation ,
-  useUpdateProfileMutation
+  useChangePasswordMutation,
+  useUpdateProfileMutation,
+
 } = api;

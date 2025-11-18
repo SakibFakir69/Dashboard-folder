@@ -26,12 +26,14 @@ function Register() {
     try {
       const res = await registerUser(data).unwrap();
       const token = res?.access || res?.data?.access;
+
       localStorage.setItem("token", token);
 
-      await sendOtp({ email: res?.email, token }).unwrap();
+      // await sendOtp({ email: data?.email, token }).unwrap();
 
       toast.success("OTP sent to your email!");
       navigate("/auth/otp-verify");
+      
     } catch (error) {
       toast.error(error.response?.data?.detail || "Something went wrong");
     }

@@ -104,7 +104,7 @@ function Dashboard() {
 
           {
             token &&   <button onClick={handleLogout} className="bg-blue-600
-             hover:bg-blue-700 h-10 rounded-xl text-xl text-white  shadow-sm transition-all w-full">
+             hover:bg-blue-700 h-10 rounded text-xl text-white  shadow-sm transition-all w-full">
               Logout
             </button>
           }

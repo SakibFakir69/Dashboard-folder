@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import toast, { Toaster } from "react-hot-toast";
 import { useChangePasswordMutation } from "../../../redux/features/api";
+import { TextField } from "@mui/material";
 
 function Setting() {
  
@@ -14,6 +15,10 @@ function Setting() {
   const handleChange = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const token = localStorage.getItem("token");
+    if(!token) return;
+    
 
     try {
       const res = await changePassword({
@@ -36,7 +41,7 @@ function Setting() {
   return (
     <div className="flex flex-col items-center justify-center w-full p-4">
       <Toaster />
-      <h3 className="md:text-3xl text-2xl font-semibold mb-6">
+      <h3 className="md:text-3xl text-2xl font-semibold mb-6 color-2">
         Change Password
       </h3>
 
@@ -44,16 +49,16 @@ function Setting() {
         onSubmit={handleChange}
         className="flex flex-col gap-4 w-full max-w-md"
       >
-        <input
+        <TextField
           type="password"
           placeholder="Old Password"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
-          className="p-3 border rounded-md w-full"
+          className="p-3  border rounded-md w-full border-black outline "
           required
         />
 
-        <input
+        <TextField
           type="password"
           placeholder="New Password"
           value={newPassword}

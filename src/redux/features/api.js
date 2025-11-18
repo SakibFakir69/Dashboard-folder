@@ -69,6 +69,32 @@ export const api = createApi({
         body: { email, otp, new_password },
       }),
     }),
+
+
+    /// change password 
+
+    changePassword :builder.mutation({
+
+      query:(data)=> ({
+        url: "/auth/users/me/change-password/",
+        method:"POST",
+        body:data
+      })
+
+    })
+    ,
+    updateProfile: builder.mutation({
+  query: ({ data, token }) => ({
+    url: "/auth/users/me/",
+    method: "PUT",
+    body: data,
+    headers: { Authorization: `Bearer ${token}` },
+  }),
+}),
+
+
+
+
   }),
 });
 
@@ -80,4 +106,6 @@ export const {
   useForgotPasswordSendOtpMutation,
   useForgotPasswordVerifyOtpMutation,
   useResetPasswordMutation,
+  useChangePasswordMutation ,
+  useUpdateProfileMutation
 } = api;

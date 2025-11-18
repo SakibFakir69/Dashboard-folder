@@ -1,38 +1,33 @@
 import React, { useState } from "react";
-import { baseApi } from "../../../utils/baseUrl";
+
 import toast, { Toaster } from "react-hot-toast";
+import { useChangePasswordMutation } from "../../../redux/features/api";
 
 function Setting() {
-  const token = localStorage.getItem("token");
+ 
 
   const [loading, setLoading] = useState(false); /// handel loading state
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [changePassword] = useChangePasswordMutation();
 
   const handleChange = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await baseApi.post(
-        "/auth/users/me/change-password/",
-        { old_password: oldPassword, new_password: newPassword },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (res.status === 200) {
-        toast.success("Password changed successfully");
-        setOldPassword("");
-        setNewPassword("");
-      }
+      const res = await changePassword({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }).unwrap(); 
       console.log(res);
+
+      toast.success("Password changed successfully");
+      setOldPassword("");
+      setNewPassword("");
     } catch (error) {
+      toast.error(error?.data?.detail || "Failed to change password");
       console.log(error);
-      toast.error("Failed to change password");
     } finally {
       setLoading(false);
     }
@@ -41,7 +36,9 @@ function Setting() {
   return (
     <div className="flex flex-col items-center justify-center w-full p-4">
       <Toaster />
-      <h3 className="md:text-3xl text-2xl font-semibold mb-6">Change Password</h3>
+      <h3 className="md:text-3xl text-2xl font-semibold mb-6">
+        Change Password
+      </h3>
 
       <form
         onSubmit={handleChange}

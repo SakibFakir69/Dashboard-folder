@@ -2,47 +2,41 @@ import { TextField, Typography, Paper } from "@mui/material";
 import React, { useState } from "react";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import toast, { Toaster } from "react-hot-toast";
-import { baseApi } from "../../utils/baseUrl";
+
 
 
 import { useNavigate } from "react-router";
 import Logo from "../../utils/logo";
 import Button from "../../components/ui/Button";
+import { useVerifyOtpMutation } from "../../redux/features/api";
 function OtpVerification() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
+  const [ verifyOtp] = useVerifyOtpMutation();
 
   const handleSubmit = async () => {
-    if (otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit OTP");
-      return;
-    }
+  if (otp.length !== 6) {
+    toast.error("Please enter a valid 6-digit OTP");
+    return;
+  }
 
-    try {
-      const res = await baseApi.post(
-        "/auth/me/email/conform-verify/",
-        { email, otp },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(res, "res")
+  try {
+   
+    const res = await verifyOtp({ email, otp, token }).unwrap();
 
-      if (res?.data) {
-        toast.success("Verified successfully");
-        setTimeout(() => navigate("/auth/login"), 2000);
-      }
-    } catch (error) {
-      toast.error("OTP verification failed");
-      console.log(error);
+    if (res?.data) {
+      toast.success("Verified successfully");
+      setTimeout(() => navigate("/auth/login"), 2000);
     }
-  };
+  } catch (error) {
+    toast.error(error?.data?.detail || "OTP verification failed");
+    console.log(error);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full p-4">

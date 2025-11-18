@@ -1,12 +1,14 @@
 import { TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { baseApi } from "../utils/baseUrl";
+
 import toast, { Toaster } from "react-hot-toast";
 
 function Profile() {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
+    
+const [updateProfile] = useUpdateProfileMutation();
 
   const {
     register,
@@ -14,28 +16,24 @@ function Profile() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
-    console.log(data);
-    setLoading(true);
 
-    try {
-      const res = await baseApi.put("/auth/users/me/", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      if (res.status === 200) {
-        toast.success("Profile updated successfully");
-      }
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
-  };
+const onSubmit = async (data) => {
+  setLoading(true);
+  
+
+  try {
+    const res = await updateProfile({ data, token }).unwrap(); 
+
+    toast.success("Profile updated successfully");
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+    toast.error(error?.data?.detail || "Failed to update profile");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex justify-center items-center flex-col w-full p-4">

@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import Button from "../../components/ui/Button";
 import { Link, useNavigate } from "react-router";
-import { baseApi } from "../../utils/baseUrl";
+
 import toast, { Toaster } from "react-hot-toast";
 import TextField from "@mui/material/TextField";
 import Logo from "../../utils/logo";
@@ -28,7 +28,7 @@ function Register() {
       const token = res?.access || res?.data?.access;
       localStorage.setItem("token", token);
 
-      await sendOtp({ email: data.email, token }).unwrap();
+      await sendOtp({ email: res?.email, token }).unwrap();
 
       toast.success("OTP sent to your email!");
       navigate("/auth/otp-verify");

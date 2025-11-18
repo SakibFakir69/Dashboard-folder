@@ -7,14 +7,19 @@ import App from "../../App";
 function Dashboard() {
 
 
-  const token = localStorage.getItem("token");
 
-  const navigate=useNavigate();
+
 
 
   const location = useLocation();
+  const [ loading , setLoading ] = useState(true);
   const prevPath = useRef(location.pathname);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const token = localStorage.getItem("token");
+  const refReshToken =localStorage.getItem("refToken")
+
+  const navigate=useNavigate();
 
   useEffect(() => {
     prevPath.current = location.pathname;
@@ -30,7 +35,14 @@ function Dashboard() {
 
   useEffect(()=>{
 
-    if(!token)
+    // if token empty then cann refresh token and add loading state 
+
+    if(token && refReshToken){
+      setLoading(false);
+    }
+
+
+    if(!token && !refReshToken )
     {
       navigate('/auth/login')
     }
@@ -49,10 +61,22 @@ function Dashboard() {
 
   }
 
+
+  if(loading)
+  {
+    return <div className="w-full
+    text-center">
+      
+      <span className="loading size-36"></span>
+    </div>
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
       <Toaster/>
+
+      
       <aside
         className={`
           fixed top-0 left-0 h-full bg-white shadow-lg p-6 z-50

@@ -5,6 +5,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
   reducerPath: "userAuth",
   baseQuery: fetchBaseQuery({ baseUrl: "http://127.0.0.1:8020" }),
+
+
+  
   endpoints: (builder) => ({
     // Register
     registerUser: builder.mutation({
@@ -97,15 +100,29 @@ export const api = createApi({
     // handle resend password
 
     resendPassword: builder.mutation({
-  query: ({ email, token }) => ({
-    url: '/auth/me/email/request-verify/',
-    method: "POST",
-    body: { email },
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-})
+      query: ({ email, token }) => ({
+        url: '/auth/me/email/request-verify/',
+        method: "POST",
+        body: { email },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    }),
+    // refresh token 
+    // /auth/users/login/refresh/
+
+    refreshToken:builder.mutation({
+      query:(refreshToken)=>({
+
+
+        url:'/auth/users/login/refresh/',
+        method:"POST",
+
+        body:refreshToken
+
+      })
+    })
 
 
 

@@ -15,7 +15,7 @@ import { jwtDecode } from "jwt-decode";
 function OtpVerification() {
   const token = localStorage.getItem("token");
   const [resendPassword] = useResendPasswordMutation();
-  const decoded = jwtDecode(token) || "";
+  const decoded = jwtDecode(token) || "" || {};
   const navigate = useNavigate();
 
   const [otp, setOtp] = useState("");
@@ -50,9 +50,9 @@ function OtpVerification() {
       }).unwrap();
       console.log(res, "verify response");
 
-      if (decoded?.detail) {
+      if (res?.detail) {
         toast.success("Verified successfully");
-        console.log(decoded, " after successfully send otp");
+       
 
         localStorage.removeItem("token");
 

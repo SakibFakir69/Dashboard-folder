@@ -1,9 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Dashboard from "../page/dashboard/Dashboard";
-import RevenuChart from "../page/dashboard/chart/RevenuChart";
-import SalesChart from "../page/dashboard/chart/SalesChart";
-import UserOverViewChart from "../page/dashboard/chart/UserOverViewChart";
-import Setting from "../page/dashboard/setting/Setting";
+
 import AuthPage from "../page/auth/AuthPage";
 
 import RestPassword from "../page/auth/ResetPassword";
@@ -14,6 +11,10 @@ import Register from "../page/auth/Register";
 import OtpVerification from "../page/auth/OtpVerification";
 import Profile from "../page/Profile";
 import ResetPassword from "../page/auth/ResetPassword";
+import Share from "../page/dashboard/inventory/Share";
+import Category from "../page/dashboard/inventory/Category";
+import Inventory from "../page/dashboard/inventory/Inventory";
+import DashboardStats from "../page/dashboard/inventory/DashboardStats";
 
 export const route = createBrowserRouter([
   {
@@ -21,21 +22,26 @@ export const route = createBrowserRouter([
     element: <Dashboard />,
     children: [
       {
-        path: "revenu",
-        element: <RevenuChart />,
+        path: "dashboard",
+        element: <DashboardStats/>
       },
       {
-        path: "sales",
-        element: <SalesChart />,
+        path: "inventory",
+        element: <Inventory/>
       },
       {
-        path: "user-overview",
-        element: <UserOverViewChart />,
+        path: "category",
+        element: <Category/>
       },
       {
-        path: "setting",
-        element: <Setting />,
+        path:'share',
+        element:<Share/>
+
       },
+      // {
+      //   path: "setting",
+      //   element: <Setting />,
+      // },
       // profile
       {
         path: "/profile",

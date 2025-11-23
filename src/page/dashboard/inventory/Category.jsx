@@ -18,7 +18,7 @@ function Category() {
         <section className='flex w-full mt-10 gap-x-4 rounded '>
         {
           Array.from({length:4}).map((category,key)=>(
-            <div className='flex border bg-white shadow-2xl border-gray-600/10 rounded  p-1 pr-2'>
+            <div className='flex border bg-white shadow border-gray-600/20 rounded  p-1 pr-2'>
             
             <p className='text-black  w-20 text-center p-1'>{key}</p>
             <button>X</button>

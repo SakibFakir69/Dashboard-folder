@@ -11,3 +11,16 @@
 .less-color{
     color: FF8682;
 }
+
+.react-select__control {
+  @apply bg-gray-800 text-white border-gray-600;
+}
+.react-select__menu {
+  @apply bg-gray-800 text-white;
+}
+.react-select__option {
+  @apply bg-gray-800 text-white hover:bg-blue-600;
+}
+.react-select__single-value {
+  @apply text-white;
+}

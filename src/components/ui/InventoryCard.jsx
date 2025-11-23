@@ -16,10 +16,10 @@ function InventoryCard({name="" , category="", proirity="" , number}) {
             </div>
             <div>
                 {/* gave color based on condition */}
-                <p className={`${proirity==='High' ? "text-red-500 font-bold" : proirity==='low' ? "text-green font-bold" :"text-black font-bold" }`}>{proirity}</p>
+                <p className={`${proirity==='High' ? "text-red-500 md:font-bold" : proirity==='low' ? "text-green md:font-bold" :"text-black md:font-bold" }`}>{proirity}</p>
             </div>
             <div>
-                <p className='font-semibold text-xl'>{number}</p>
+                <p className='md:font-semibold md:text-xl'>{number}</p>
             </div>
 
 

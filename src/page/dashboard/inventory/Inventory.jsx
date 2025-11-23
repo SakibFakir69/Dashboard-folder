@@ -50,7 +50,7 @@ function Inventory() {
   const selectStyles = {
     control: (provided, state) => ({
       ...provided,
-      backgroundColor: "#f3f4f6", // same as MUI TextField
+      backgroundColor: "#f3f4f6", 
       borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
       borderRadius: 4,
       minHeight: "48px",
@@ -83,7 +83,7 @@ function Inventory() {
         <SearchButton onClick={() => {}} title="Submit" />
       </section>
 
-      {/* Add Inventory */}
+     
       <section className="flex justify-between items-center mb-6">
         <h3 className="font-bold md:text-2xl text-black">Inventory List</h3>
         <AddButton onClick={openModal} title="Add to Inventory" />

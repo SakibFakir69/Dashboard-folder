@@ -17,29 +17,28 @@ export const customStyles = {
 
 
 
-export const selectStyles = {
-  control: (provided, state) => ({
-    ...provided,
-    backgroundColor: "#f3f4f6", // same as MUI input background
-    borderColor: state.isFocused ? "#3b82f6" : "#d1d5db", // like TextField border
-    borderRadius: 4,
-    minHeight: "48px",
-    color: "#111827",
-    boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : "none",
-    "&:hover": { borderColor: "#3b82f6" },
-  }),
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: "#f3f4f6", // match input
-    color: "#111827",
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isFocused ? "#3b82f6" : "#f3f4f6",
-    color: state.isFocused ? "#fff" : "#111827",
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: "#111827",
-  }),
-};
+  const selectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "#f3f4f6", 
+      borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+      borderRadius: 4,
+      minHeight: "48px",
+      boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : "none",
+      "&:hover": { borderColor: "#3b82f6" },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#f3f4f6",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#3b82f6" : "#f3f4f6",
+      color: state.isFocused ? "#fff" : "#111827",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#111827",
+    }),
+  };
+

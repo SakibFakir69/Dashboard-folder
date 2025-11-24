@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
   reducerPath: "userAuth",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://127.0.0.1:8020",
+    // eslint-disable-next-line no-undef
+      baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8020',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -80,17 +81,17 @@ export const api = createApi({
     }),
 
     // Change password
-changePassword: builder.mutation({
-  query: ({ old_password, new_password, token }) => ({
-    url: "/auth/users/me/change-password/",
-    method: "POST",
-    body: { old_password, new_password },
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  }),
-}),
+    changePassword: builder.mutation({
+      query: ({ old_password, new_password, token }) => ({
+        url: "/auth/users/me/change-password/",
+        method: "POST",
+        body: { old_password, new_password },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
 
 
     // Update profile
@@ -125,6 +126,48 @@ changePassword: builder.mutation({
         body: refreshToken,
       }),
     }),
+
+
+
+    // category ------------------------------
+
+    createCategory:builder.mutation({
+      query:(data)=>({
+
+        url:'/category/',
+        method:"POST",
+        body:data
+      }),
+      invalidatesTags:['Category']
+    }),
+    allCategory:builder.query({
+      query:()=>({
+        url:'/category/',
+        method:"GET",
+      
+
+      }),
+      providesTags:['Category']
+    }),
+
+    // inventory -------------------------------------------------
+    createInventory:builder.mutation({
+      query:(data)=>({
+        url:'/inventory/',
+        method:"POST",
+        body:data
+
+
+      })
+    })
+
+
+
+
+
+
+
+
   }),
 });
 
@@ -139,4 +182,13 @@ export const {
   useResetPasswordMutation,
   useChangePasswordMutation,
   useUpdateProfileMutation,
+
+
+  // category
+  useAllCategoryQuery,
+  useCreateCategoryMutation,
+
+  // inventory
+
+  useCreateInventoryMutation
 } = api;

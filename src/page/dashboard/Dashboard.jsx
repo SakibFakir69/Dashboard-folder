@@ -39,15 +39,15 @@ function Dashboard() {
   }, [location.pathname]);
 
   const links = [
-    { id: 1, title: "Dashboard", route: "dashboard", icon: <FiClipboard/> },
-    { id: 2, title: "inventory", route: "/inventory", icon: <FiInbox/> },
+    { id: 1, title: "Dashboard", route: "dashboard", icon: <FiClipboard /> },
+    { id: 2, title: "inventory", route: "/inventory", icon: <FiInbox /> },
     {
       id: 3,
       title: "category",
       route: "/category",
-      icon: <FiShoppingCart/>,
+      icon: <FiShoppingCart />,
     },
-    { id: 4, title: "share", route: "/share", icon: <FiShare2/> },
+    { id: 4, title: "share", route: "/share", icon: <FiShare2 /> },
   ];
 
   useEffect(() => {
@@ -107,12 +107,14 @@ function Dashboard() {
           </button>
         </div>
 
-      <div>
+        <div>
           <h2 className="hidden md:block text-2xl font-bold mb-8 text-black ">
-          Inventory Manager
-        </h2>
-        <p className="text-gray-500 -mt-8 mr-2 text-sm text-center">Business Management System</p>
-      </div>
+            Inventory Manager
+          </h2>
+          <p className="text-gray-500 -mt-8 mr-2 text-sm text-center">
+            Business Management System
+          </p>
+        </div>
 
         <nav className="flex flex-col gap-4 mt-18">
           {links.map((link) => (
@@ -129,7 +131,7 @@ function Dashboard() {
               onClick={() => setIsSidebarOpen(false)}
             >
               {link.icon}
-              <span className="">{link.title}</span>
+              <span className="font-semibold">{link.title}</span>
             </NavLink>
           ))}
         </nav>

@@ -8,9 +8,13 @@ import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
 import SearchButton from "../../../components/ui/SearchButton";
 import AddButton from "../../../components/ui/AddButton";
+import { useCreateInventoryMutation } from "../../../redux/features/api";
+import toast, { Toaster } from "react-hot-toast";
 
 function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
+
+  const [ createInventory] = useCreateInventoryMutation();
  
 
   const categoryOptions = [
@@ -33,7 +37,7 @@ function Inventory() {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const onSubmit = (data) => {
+  const onSubmit =async (data) => {
     const newItem = {
       name: data.name,
       number: data.number,
@@ -41,7 +45,19 @@ function Inventory() {
       category: data.category.value,
     };
    
-    console.log(newItem);
+
+    try {
+
+      const res = await createInventory(newItem).unwrap();
+      console.log(res, ' inventory');
+
+      toast("Add to inventory successfull" )
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
 
     reset(); 
     closeModal();
@@ -74,6 +90,8 @@ function Inventory() {
 
   return (
     <div className="p-4">
+
+      <Toaster/>
       {/* Search */}
       <section className="flex gap-x-6 mb-6">
         <TextField

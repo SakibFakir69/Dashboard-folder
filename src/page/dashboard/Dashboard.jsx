@@ -124,7 +124,7 @@ function Dashboard() {
               className={({ isActive }) =>
                 `flex items-center gap-3 p-2 rounded-lg transition-colors ${
                   isActive
-                    ? "bg-black text-white transform transition delay-75 duration-150"
+                    ? "bg-blue-600 text-white transform transition delay-75 duration-150"
                     : "text-gray-700 hover:bg-gray-200"
                 }`
               }

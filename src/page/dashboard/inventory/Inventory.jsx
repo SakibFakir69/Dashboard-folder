@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-import InventoryCard from "../../../components/ui/InventoryCard";
+import InventoryCard from "../../../components/ui/InventoryTable";
 import Modal from "react-modal";
 import { customStyles } from "../../../style/modal";
 import { priorityOptions } from "../../../constant/priority";
@@ -10,12 +10,27 @@ import SearchButton from "../../../components/ui/SearchButton";
 import AddButton from "../../../components/ui/AddButton";
 import { useCreateInventoryMutation } from "../../../redux/features/api";
 import toast, { Toaster } from "react-hot-toast";
+import InventoryTable from "../../../components/ui/InventoryTable";
 
 function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
 
   const [ createInventory] = useCreateInventoryMutation();
  
+
+
+
+
+
+   const [inventoryList, setInventoryList] = useState([
+      { name: "Headphone", category: "IT", priority: "High", number: 10 },
+      { name: "Keyboard", category: "IT", priority: "Medium", number: 5 },
+      { name: "Mouse", category: "IT", priority: "Low", number: 15 },
+      { name: "Monitor", category: "IT", priority: "High", number: 2 },
+      { name: "Keyboard", category: "IT", priority: "Medium", number: 5 },
+      { name: "Mouse", category: "IT", priority: "Low", number: 15 },
+      { name: "Monitor", category: "IT", priority: "High", number: 2 },
+    ]);
 
   const categoryOptions = [
     { value: "IT", label: "IT" },
@@ -185,15 +200,9 @@ function Inventory() {
 
       {/* Inventory items */}
       <section className="flex flex-col gap-y-3 overflow-y-auto max-h-[400px] mt-6">
-        { Array.from({ length: 4 }).map((_, idx) => (
-              <InventoryCard
-                key={idx}
-                name="Head phone"
-                category="IT"
-                proirity="High"
-                number="10"
-              />
-            ))}
+
+        <InventoryTable inventoryData={inventoryList}/>
+        
       </section>
     </div>
   );

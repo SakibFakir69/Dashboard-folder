@@ -24,3 +24,9 @@
 .react-select__single-value {
   @apply text-white;
 }
+
+
+.modal {
+  position: fixed; /* or absolute */
+  z-index: 1300;   /* MUI default for modals */
+}

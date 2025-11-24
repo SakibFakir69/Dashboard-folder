@@ -162,6 +162,22 @@ export const api = createApi({
       invalidatesTags:['Category']
     }),
 
+    // edit category
+
+    editCategory:builder.mutation({
+      query:({id , ...data})=>({
+
+        url:`/category/${id}/`,
+        method:"PATCH",
+        body:data
+
+      }),
+      invalidatesTags:['Category']
+    }),
+
+
+
+
     // inventory -------------------------------------------------
     createInventory:builder.mutation({
       query:(data)=>({
@@ -200,6 +216,7 @@ export const {
   useAllCategoryQuery,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
+  useEditCategoryMutation,
 
   // inventory
 

@@ -140,14 +140,26 @@ export const api = createApi({
       }),
       invalidatesTags:['Category']
     }),
+
+    // all category
     allCategory:builder.query({
       query:()=>({
         url:'/category/',
         method:"GET",
-      
-
       }),
       providesTags:['Category']
+    }),
+
+    // delete category
+
+    deleteCategory:builder.mutation({
+      query:(deleteById)=>({
+
+        url:`/category/${deleteById}/`,
+        method:"DELETE"
+
+      }),
+      invalidatesTags:['Category']
     }),
 
     // inventory -------------------------------------------------
@@ -187,6 +199,7 @@ export const {
   // category
   useAllCategoryQuery,
   useCreateCategoryMutation,
+  useDeleteCategoryMutation,
 
   // inventory
 

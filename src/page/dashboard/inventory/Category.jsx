@@ -4,6 +4,7 @@ import SearchButton from "../../../components/ui/SearchButton";
 import {
   useAllCategoryQuery,
   useCreateCategoryMutation,
+  useDeleteCategoryMutation,
 } from "../../../redux/features/api";
 import Loading from "../../../components/ui/Loading";
 import toast from "react-hot-toast";
@@ -15,6 +16,7 @@ function Category() {
 
   const [createCategory, { isLoading: categoryLoading }] =
     useCreateCategoryMutation();
+    const [deleteCategory] = useDeleteCategoryMutation();
 
   console.log(allCategory, "data");
 
@@ -38,6 +40,31 @@ function Category() {
       console.log(error);
     }
   };
+
+  const handleDeleteCategory =async (id)=>{
+
+    if(!id)
+    {
+      toast("Failed to delete");
+      return;
+    }
+
+    try {
+
+      const res = await deleteCategory(id).unwrap();
+      console.log(res);
+      toast("Category delete successfully");
+      
+    } catch (error) {
+
+      console.log(error);
+      
+    }
+
+  }
+
+
+
 
   if (isLoading) {
     return <Loading />;
@@ -75,7 +102,7 @@ function Category() {
               >
                 <p className="text-black text-center px-2">{item.name}</p>
 
-                <button className="ml-2  font-bold">X</button>
+                <button onClick={()=> handleDeleteCategory(item.id)} className="ml-2  font-bold">X</button>
               </div>
             ))}
           </section>

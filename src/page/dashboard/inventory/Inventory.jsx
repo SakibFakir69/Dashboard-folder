@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import Modal from "react-modal";
-import { customStyles } from "../../../style/modal";
+
 import { priorityOptions } from "../../../constant/priority";
 import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
@@ -12,20 +12,24 @@ import {
   useAllInventoryQuery,
   useCreateInventoryMutation,
   useDeleteInventoryMutation,
+  useOnUpdateInventoryMutation,
+ 
 } from "../../../redux/features/api";
 import toast, { Toaster } from "react-hot-toast";
 import InventoryTable2 from "../../../components/ui/InventoryTable2";
+import { selectStylesInventory } from "../../../style/modal";
+import { responsiveModalStylesInventory } from "../../../style/modal";
+import { selectStyles } from "../../../style/modal";
 
 function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
   const [createInventory] = useCreateInventoryMutation();
   const { data: allCategory } = useAllCategoryQuery();
   const { data: allInventory, isLoading } = useAllInventoryQuery();
+  const [onUpdateInventory] = useOnUpdateInventoryMutation();
 
   const [deleteInventory] = useDeleteInventoryMutation();
-
-  console.log(allCategory, " category");
-  console.log(allInventory, " inv");
 
   const { register, handleSubmit, control, reset } = useForm({
     defaultValues: {
@@ -38,109 +42,88 @@ function Inventory() {
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
+  const onEdit = (item) => {
+    console.log(item);
+    setEditingItem(item);
+    setIsOpen(true); 
+    reset({
+      name: item.name,
+      number: item.number,
+      priority: { value: item.priority, label: item.priority },
+      category: item.category,
+    });
+  };
 
   const onSubmit = async (data) => {
-    const newItem = {
+    const itemData = {
       name: data.name,
       number: data.number,
       priority: data.priority.value,
       category: data.category,
     };
-    console.log(data);
 
     try {
-      const res = await createInventory(newItem).unwrap();
-      console.log(res, " inventory");
-      toast.success("Add to inventory successful");
+      if (editingItem) {
+        const res = await onUpdateInventory({
+          id: editingItem.id,
+          ...itemData,
+        }).unwrap();
+        toast.success("Inventory updated successfully");
+        console.log(res);
+      } else {
+        const res = await createInventory(itemData).unwrap();
+        toast.success("Item added successfully");
+        console.log(res);
+      }
     } catch (error) {
       console.log(error);
-      toast.error("Failed to add item");
+      toast.error("Failed to save inventory");
     }
 
+    setEditingItem(null);
     reset();
     closeModal();
   };
 
   // on delete
 
-const onDelete = (id) => {
-  toast(
-    (t) => (
-      <div className="flex flex-col gap-2">
-        <span>Are you sure you want to delete this item?</span>
-        <div className="flex gap-2 justify-end">
-          <button
-            className="bg-gray-200 px-3 py-1 rounded"
-            onClick={() => toast.dismiss(t.id)}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-red-500 text-white px-3 py-1 rounded"
-            onClick={async () => {
-              toast.dismiss(t.id); // Close toast
-              try {
-                const res = await deleteInventory(id).unwrap();
-                toast.success("Deleted successfully");
-                console.log(res);
-              } catch (error) {
-                toast.error(error.message);
-              }
-            }}
-          >
-            Delete
-          </button>
+  const onDelete = (id) => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <span>Are you sure you want to delete this item?</span>
+          <div className="flex gap-2 justify-end">
+            <button
+              className="bg-gray-200 px-3 py-1 rounded"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded"
+              onClick={async () => {
+                toast.dismiss(t.id); // Close toast
+                try {
+                  const res = await deleteInventory(id).unwrap();
+                  toast.success("Deleted successfully");
+                  console.log(res);
+                } catch (error) {
+                  toast.error(error.message);
+                }
+              }}
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-    ),
-    {
-      duration: Infinity, // keep until user clicks
-    }
-  );
-};
-
-  const selectStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      backgroundColor: "#f3f4f6",
-      borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
-      borderRadius: 4,
-      minHeight: "56px",
-      boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : "none",
-      "&:hover": { borderColor: "#3b82f6" },
-    }),
-    menu: (provided) => ({
-      ...provided,
-      backgroundColor: "#f3f4f6",
-      zIndex: 9999,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused ? "#3b82f6" : "#f3f4f6",
-      color: state.isFocused ? "#fff" : "#111827",
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: "#111827",
-    }),
+      ),
+      {
+        duration: Infinity,
+      }
+    );
   };
 
-  const responsiveModalStyles = {
-    ...customStyles,
-    content: {
-      ...customStyles.content,
-      width: "95%",
-      maxWidth: "500px",
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-      maxHeight: "90vh",
-      overflowY: "auto",
-    },
-  };
+  // edit
 
   return (
     <div className="p-4 md:p-6 w-full   min-h-screen">
@@ -173,7 +156,7 @@ const onDelete = (id) => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        style={responsiveModalStyles}
+        style={responsiveModalStylesInventory}
         contentLabel="Add Inventory Modal"
         ariaHideApp={false}
       >
@@ -218,7 +201,7 @@ const onDelete = (id) => {
                   {...field}
                   options={priorityOptions}
                   placeholder="Select Priority"
-                  styles={selectStyles}
+                  styles={selectStylesInventory}
                 />
               )}
             />
@@ -286,8 +269,8 @@ const onDelete = (id) => {
           <div>
             <InventoryTable2
               inventoryData={allInventory}
-              onEdit={(item) => console.log("Edit", item)}
               onDelete={onDelete}
+              onEdit={onEdit}
             />
           </div>
         )}

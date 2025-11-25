@@ -24,7 +24,7 @@
 
 
 
-  const selectStyles = {
+  export const selectStyles = {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: "#f3f4f6", 
@@ -49,3 +49,48 @@
     }),
   };
 
+
+
+   export const selectStylesInventory = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "#f3f4f6",
+      borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
+      borderRadius: 4,
+      minHeight: "56px",
+      boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : "none",
+      "&:hover": { borderColor: "#3b82f6" },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#f3f4f6",
+      zIndex: 9999,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#3b82f6" : "#f3f4f6",
+      color: state.isFocused ? "#fff" : "#111827",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#111827",
+    }),
+  };
+
+
+  export const responsiveModalStylesInventory = {
+      ...customStyles,
+      content: {
+        ...customStyles.content,
+        width: "95%",
+        maxWidth: "500px",
+        top: "50%",
+        left: "50%",
+        right: "auto",
+        bottom: "auto",
+        marginRight: "-50%",
+        transform: "translate(-50%, -50%)",
+        maxHeight: "90vh",
+        overflowY: "auto",
+      },
+    };

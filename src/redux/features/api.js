@@ -4,7 +4,7 @@ export const api = createApi({
   reducerPath: "userAuth",
   baseQuery: fetchBaseQuery({
     // eslint-disable-next-line no-undef
-      baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8020',
+    baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8020',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -131,85 +131,97 @@ export const api = createApi({
 
     // category ------------------------------
 
-    createCategory:builder.mutation({
-      query:(data)=>({
+    createCategory: builder.mutation({
+      query: (data) => ({
 
-        url:'/category/',
-        method:"POST",
-        body:data
+        url: '/category/',
+        method: "POST",
+        body: data
       }),
-      invalidatesTags:['Category']
+      invalidatesTags: ['Category']
     }),
 
     // all category
-    allCategory:builder.query({
-      query:()=>({
-        url:'/category/',
-        method:"GET",
+    allCategory: builder.query({
+      query: () => ({
+        url: '/category/',
+        method: "GET",
       }),
-      providesTags:['Category']
+      providesTags: ['Category']
     }),
 
     // delete category
 
-    deleteCategory:builder.mutation({
-      query:(deleteById)=>({
+    deleteCategory: builder.mutation({
+      query: (deleteById) => ({
 
-        url:`/category/${deleteById}/`,
-        method:"DELETE"
+        url: `/category/${deleteById}/`,
+        method: "DELETE"
 
       }),
-      invalidatesTags:['Category']
+      invalidatesTags: ['Category']
     }),
 
     // edit category
 
-    editCategory:builder.mutation({
-      query:({id , ...data})=>({
+    editCategory: builder.mutation({
+      query: ({ id, ...data }) => ({
 
-        url:`/category/${id}/`,
-        method:"PATCH",
-        body:data
+        url: `/category/${id}/`,
+        method: "PATCH",
+        body: data
 
       }),
-      invalidatesTags:['Category']
+      invalidatesTags: ['Category']
     }),
 
 
 
 
     // inventory -------------------------------------------------
-    createInventory:builder.mutation({
-      query:(data)=>({
-        url:'/inventory/',
-        method:"POST",
-        body:data
+    createInventory: builder.mutation({
+      query: (data) => ({
+        url: '/inventory/',
+        method: "POST",
+        body: data
 
 
       }),
-      invalidatesTags:['Inventory']
+      invalidatesTags: ['Inventory']
     }),
     // show all inventory 
 
-    allInventory:builder.query({
-      query:()=>({
-        url:'/inventory',
-        method:"GET",
-        
+    allInventory: builder.query({
+      query: () => ({
+        url: '/inventory',
+        method: "GET",
+
 
       }),
-      providesTags:['Inventory']
+      providesTags: ['Inventory']
     }),
     // delete invetory 
 
-    deleteInventory:builder.mutation({
-      query:(deleteById)=>({
-        url:`inventory/${deleteById}/`,
-        method:"DELETE",
+    deleteInventory: builder.mutation({
+      query: (deleteById) => ({
+        url: `/inventory/${deleteById}/`,
+        method: "DELETE",
+
+      }),
+      invalidatesTags: ['Inventory']
+    }),
+
+    // update
+
+    onUpdateInventory: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/inventory/${id}/`,
+        method: "PUT",
+        body: data,
 
       }),
       invalidatesTags:['Inventory']
-    })
+    }),
 
 
 
@@ -245,4 +257,5 @@ export const {
   useCreateInventoryMutation,
   useAllInventoryQuery,
   useDeleteInventoryMutation,
+  useOnUpdateInventoryMutation
 } = api;

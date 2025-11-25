@@ -11,9 +11,7 @@ import {
 import { useAllCategoryQuery } from "../../redux/features/api";
 import { MdDelete, MdEdit } from "react-icons/md";
 
-
-
-function InventoryTable2({ inventoryData = [], onEdit, onDelete }) {
+function InventoryTable2({ inventoryData = [], onDelete, onEdit }) {
   const { data: allCategory } = useAllCategoryQuery();
 
   if (!inventoryData || inventoryData.length === 0) {
@@ -31,17 +29,26 @@ function InventoryTable2({ inventoryData = [], onEdit, onDelete }) {
           <TableRow>
             <TableCell className="!font-semibold text-gray-600">ID</TableCell>
             <TableCell className="!font-semibold text-gray-600">Name</TableCell>
-            <TableCell className="!font-semibold text-gray-600">Category</TableCell>
-            <TableCell className="!font-semibold text-gray-600">Priority</TableCell>
-            <TableCell className="!font-semibold text-gray-600">Number</TableCell>
-            <TableCell className="!font-semibold text-gray-600">Action</TableCell>
+            <TableCell className="!font-semibold text-gray-600">
+              Category
+            </TableCell>
+            <TableCell className="!font-semibold text-gray-600">
+              Priority
+            </TableCell>
+            <TableCell className="!font-semibold text-gray-600">
+              Number
+            </TableCell>
+            <TableCell className="!font-semibold text-gray-600">
+              Action
+            </TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
           {inventoryData.map((item, index) => {
-            
-            const categoryName = allCategory?.find(cat => cat.id === item.category)?.name || "Unknown";
+            const categoryName =
+              allCategory?.find((cat) => cat.id === item.category)?.name ||
+              "Unknown";
 
             return (
               <TableRow key={item.id || index}>
@@ -63,11 +70,17 @@ function InventoryTable2({ inventoryData = [], onEdit, onDelete }) {
                 </TableCell>
                 <TableCell className="!font-bold">{item.number}</TableCell>
 
-
                 {/* operation */}
                 <TableCell className="!flex md:!gap-x-2 ">
-                <MdEdit className="size-5 text-blue-600" onClick={()=> onEdit(item.id)}/>
-                <MdDelete className="size-5 text-red-500" onClick={()=> onDelete(item.id)}/>
+                  <MdEdit
+                    className="text-blue-500 cursor-pointer"
+                    size={20}
+                    onClick={() => onEdit(item)}
+                  />
+                  <MdDelete
+                    className="size-5 text-red-500"
+                    onClick={() => onDelete(item.id)}
+                  />
                 </TableCell>
               </TableRow>
             );

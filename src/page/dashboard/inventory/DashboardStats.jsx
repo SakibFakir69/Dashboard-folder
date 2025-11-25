@@ -10,6 +10,7 @@ function DashboardStats() {
 
   const [totalItems, setTotalItems] = useState("");
   const [category, setCategory] = useState([]);
+  const [ stock , setStock ] = useState(0);
 
  
  useEffect(() => {
@@ -18,9 +19,12 @@ function DashboardStats() {
     const uniqueCategories = [...new Set(allInventory.map((item) => item.category))];
     setCategory(uniqueCategories);
     
+    const totalItems = allInventory.length;
+
    
     const total = allInventory.reduce((acc, item) => acc + Number(item.number), 0);
-    setTotalItems(total);
+    setStock(total)
+    setTotalItems(totalItems);
   }
 }, [allInventory]); 
 
@@ -52,7 +56,7 @@ function DashboardStats() {
         />
         <CardComponent
           Icon={<FiBook size={28} />}
-          number={150}
+          number={stock}
           title="Total Stock"
         />
       </section>

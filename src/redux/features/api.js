@@ -186,7 +186,29 @@ export const api = createApi({
         body:data
 
 
-      })
+      }),
+      invalidatesTags:['Inventory']
+    }),
+    // show all inventory 
+
+    allInventory:builder.query({
+      query:()=>({
+        url:'/inventory',
+        method:"GET",
+        
+
+      }),
+      providesTags:['Inventory']
+    }),
+    // delete invetory 
+
+    deleteInventory:builder.mutation({
+      query:(deleteById)=>({
+        url:`inventory/${deleteById}/`,
+        method:"DELETE",
+
+      }),
+      invalidatesTags:['Inventory']
     })
 
 
@@ -220,5 +242,7 @@ export const {
 
   // inventory
 
-  useCreateInventoryMutation
+  useCreateInventoryMutation,
+  useAllInventoryQuery,
+  useDeleteInventoryMutation,
 } = api;

@@ -9,7 +9,9 @@ import SearchButton from "../../../components/ui/SearchButton";
 import AddButton from "../../../components/ui/AddButton";
 import {
   useAllCategoryQuery,
+  useAllInventoryQuery,
   useCreateInventoryMutation,
+  useDeleteInventoryMutation,
 } from "../../../redux/features/api";
 import toast, { Toaster } from "react-hot-toast";
 import InventoryTable2 from "../../../components/ui/InventoryTable2";
@@ -18,11 +20,12 @@ function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [createInventory] = useCreateInventoryMutation();
   const { data: allCategory } = useAllCategoryQuery();
+  const { data: allInventory, isLoading } = useAllInventoryQuery();
 
+  const [deleteInventory] = useDeleteInventoryMutation();
 
-
-
-  console.log(allCategory);
+  console.log(allCategory, " category");
+  console.log(allInventory, " inv");
 
   const { register, handleSubmit, control, reset } = useForm({
     defaultValues: {
@@ -41,8 +44,9 @@ function Inventory() {
       name: data.name,
       number: data.number,
       priority: data.priority.value,
-      category: data.category.value,
+      category: data.category,
     };
+    console.log(data);
 
     try {
       const res = await createInventory(newItem).unwrap();
@@ -56,6 +60,44 @@ function Inventory() {
     reset();
     closeModal();
   };
+
+  // on delete
+
+const onDelete = (id) => {
+  toast(
+    (t) => (
+      <div className="flex flex-col gap-2">
+        <span>Are you sure you want to delete this item?</span>
+        <div className="flex gap-2 justify-end">
+          <button
+            className="bg-gray-200 px-3 py-1 rounded"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-red-500 text-white px-3 py-1 rounded"
+            onClick={async () => {
+              toast.dismiss(t.id); // Close toast
+              try {
+                const res = await deleteInventory(id).unwrap();
+                toast.success("Deleted successfully");
+                console.log(res);
+              } catch (error) {
+                toast.error(error.message);
+              }
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      duration: Infinity, // keep until user clicks
+    }
+  );
+};
 
   const selectStyles = {
     control: (provided, state) => ({
@@ -193,6 +235,14 @@ function Inventory() {
               render={({ field }) => (
                 <Select
                   {...field}
+                  value={
+                    allCategory
+                      ?.map((cat) => ({ value: cat.id, label: cat.name }))
+                      .find((opt) => opt.value === field.value) || null
+                  }
+                  onChange={(selected) =>
+                    field.onChange(selected?.value || null)
+                  }
                   options={allCategory?.map((cat) => ({
                     value: cat.id,
                     label: cat.name,
@@ -228,11 +278,19 @@ function Inventory() {
       </Modal>
 
       <section className="w-full mx-auto overflow-x-auto shadow-md rounded-lg border border-gray-200">
-        {/* <InventoryTable2
-          inventoryData={inventoryList}
-          onEdit={(item) => console.log("Edit", item)}
-          onDelete={(id) => console.log("Delete", id)}
-        /> */}
+        {isLoading ? (
+          <div>
+            <p>Loading....</p>
+          </div>
+        ) : (
+          <div>
+            <InventoryTable2
+              inventoryData={allInventory}
+              onEdit={(item) => console.log("Edit", item)}
+              onDelete={onDelete}
+            />
+          </div>
+        )}
       </section>
     </div>
   );

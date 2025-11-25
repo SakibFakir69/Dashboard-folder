@@ -6,20 +6,25 @@ import InventoryTable from "../../../components/ui/InventoryTable";
 import { useAllInventoryQuery } from "../../../redux/features/api";
 
 function DashboardStats() {
+  const { data: allInventory } = useAllInventoryQuery();
 
-  const {data:allInventory} = useAllInventoryQuery();
+  const [totalItems, setTotalItems] = useState("");
+  const [category, setCategory] = useState([]);
 
-  const [ totalItems , setTotalItems ] = useState("");
-
-  useEffect(()=>{
-
-    const total = allInventory?.reduce((acc, value)=> acc+ Number (value.number) , 0);
+ 
+ useEffect(() => {
+  if (allInventory) {
+    
+    const uniqueCategories = [...new Set(allInventory.map((item) => item.category))];
+    setCategory(uniqueCategories);
+    
+   
+    const total = allInventory.reduce((acc, item) => acc + Number(item.number), 0);
     setTotalItems(total);
+  }
+}, [allInventory]); 
 
-  },[])
-
-
-
+  
 
   const [inventoryList, setInventoryList] = useState([
     { name: "Headphone", category: "IT", priority: "High", number: 10 },
@@ -35,12 +40,23 @@ function DashboardStats() {
     <div className="w-full text-black p-4 md:p-6 flex flex-col justify-center -mr-10 h-screen">
       {/* Cards Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
-        <CardComponent Icon={<FiBox size={28} />} number={totalItems} title="Total Items" />
-        <CardComponent Icon={<FiLayers size={28} />} number={8} title="Total Category" />
-        <CardComponent Icon={<FiBook size={28} />} number={150} title="Total Stock" />
+        <CardComponent
+          Icon={<FiBox size={28} />}
+          number={totalItems}
+          title="Total Items"
+        />
+        <CardComponent
+          Icon={<FiLayers size={28} />}
+          number={category.length}
+          title="Total Category"
+        />
+        <CardComponent
+          Icon={<FiBook size={28} />}
+          number={150}
+          title="Total Stock"
+        />
       </section>
 
-    
       <h3 className="font-bold md:text-2xl mb-4">New add Inventory</h3>
 
       <div className="w-full overflow-auto ">

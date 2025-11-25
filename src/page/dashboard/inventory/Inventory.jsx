@@ -1,44 +1,25 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
-import InventoryCard from "../../../components/ui/InventoryTable";
 import Modal from "react-modal";
+
 import { customStyles } from "../../../style/modal";
 import { priorityOptions } from "../../../constant/priority";
 import Select from "react-select";
 import { useForm, Controller } from "react-hook-form";
 import SearchButton from "../../../components/ui/SearchButton";
 import AddButton from "../../../components/ui/AddButton";
-import { useCreateInventoryMutation } from "../../../redux/features/api";
+import {
+  useAllCategoryQuery,
+  useCreateInventoryMutation,
+} from "../../../redux/features/api";
 import toast, { Toaster } from "react-hot-toast";
-import InventoryTable from "../../../components/ui/InventoryTable";
+import InventoryTable2 from "../../../components/ui/InventoryTable2";
 
 function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
-
-  const [ createInventory] = useCreateInventoryMutation();
- 
-
-
-
-
-
-   const [inventoryList, setInventoryList] = useState([
-      { name: "Headphone", category: "IT", priority: "High", number: 10 },
-      { name: "Keyboard", category: "IT", priority: "Medium", number: 5 },
-      { name: "Mouse", category: "IT", priority: "Low", number: 15 },
-      { name: "Monitor", category: "IT", priority: "High", number: 2 },
-      { name: "Keyboard", category: "IT", priority: "Medium", number: 5 },
-      { name: "Mouse", category: "IT", priority: "Low", number: 15 },
-      { name: "Monitor", category: "IT", priority: "High", number: 2 },
-    ]);
-
-  const categoryOptions = [
-    { value: "IT", label: "IT" },
-    { value: "Electronics", label: "Electronics" },
-    { value: "Furniture", label: "Furniture" },
-    { value: "Stationery", label: "Stationery" },
-    { value: "Miscellaneous", label: "Miscellaneous" },
-  ];
+  const [createInventory] = useCreateInventoryMutation();
+  const { data: allCategory } = useAllCategoryQuery();
+  console.log(allCategory);
 
   const { register, handleSubmit, control, reset } = useForm({
     defaultValues: {
@@ -52,45 +33,41 @@ function Inventory() {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const onSubmit =async (data) => {
+  const onSubmit = async (data) => {
     const newItem = {
       name: data.name,
       number: data.number,
       priority: data.priority.value,
       category: data.category.value,
     };
-   
 
     try {
-
       const res = await createInventory(newItem).unwrap();
-      console.log(res, ' inventory');
-
-      toast("Add to inventory successfull" )
-      
+      console.log(res, " inventory");
+      toast.success("Add to inventory successful");
     } catch (error) {
       console.log(error);
-      
+      toast.error("Failed to add item");
     }
-    
 
-    reset(); 
+    reset();
     closeModal();
   };
 
   const selectStyles = {
     control: (provided, state) => ({
       ...provided,
-      backgroundColor: "#f3f4f6", 
+      backgroundColor: "#f3f4f6",
       borderColor: state.isFocused ? "#3b82f6" : "#d1d5db",
       borderRadius: 4,
-      minHeight: "48px",
+      minHeight: "56px",
       boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : "none",
       "&:hover": { borderColor: "#3b82f6" },
     }),
     menu: (provided) => ({
       ...provided,
       backgroundColor: "#f3f4f6",
+      zIndex: 9999,
     }),
     option: (provided, state) => ({
       ...provided,
@@ -103,46 +80,76 @@ function Inventory() {
     }),
   };
 
-  return (
-    <div className="p-4">
+  const responsiveModalStyles = {
+    ...customStyles,
+    content: {
+      ...customStyles.content,
+      width: "95%",
+      maxWidth: "500px",
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+      maxHeight: "90vh",
+      overflowY: "auto",
+    },
+  };
 
-      <Toaster/>
-      {/* Search */}
-      <section className="flex gap-x-6 mb-6">
+  return (
+    <div className="p-4 md:p-6 w-full   min-h-screen">
+      <Toaster />
+
+      <section className="flex flex-col md:flex-row gap-4 mb-8 items-center w-full">
         <TextField
           placeholder="Search your inventory ..."
-          sx={{ width: "100%", "& .MuiInputBase-root": { height: "48px" } }}
+          fullWidth
+          sx={{
+            flex: 1,
+            "& .MuiInputBase-root": { height: "48px" },
+          }}
         />
-        <SearchButton onClick={() => {}} title="Submit" />
+
+        <div className="w-full md:w-auto">
+          <SearchButton onClick={() => {}} title="Submit" />
+        </div>
       </section>
 
-     
-      <section className="flex justify-between items-center mb-6">
-        <h3 className="font-bold md:text-2xl text-black">Inventory List</h3>
-        <AddButton onClick={openModal} title="Add to Inventory" />
+      <section className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h3 className="font-bold text-xl md:text-2xl text-black">
+          Inventory List
+        </h3>
+        <div className="w-full sm:w-auto">
+          <AddButton onClick={openModal} title="Add to Inventory" />
+        </div>
       </section>
 
-      {/* Modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+        style={responsiveModalStyles}
         contentLabel="Add Inventory Modal"
+        ariaHideApp={false}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-black">
-            Add item to your inventory
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg md:text-xl font-bold text-black">
+            Add item to inventory
           </h2>
+          <button
+            onClick={closeModal}
+            className="text-gray-500 hover:text-red-500 font-bold"
+          >
+            ✕
+          </button>
         </div>
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           <TextField
             label="Item Name"
             {...register("name", { required: true })}
             fullWidth
+            variant="outlined"
           />
 
           <TextField
@@ -150,59 +157,79 @@ function Inventory() {
             type="number"
             {...register("number", { required: true })}
             fullWidth
+            variant="outlined"
           />
 
-          {/* Priority */}
-          <Controller
-            name="priority"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={priorityOptions}
-                placeholder="Select Priority"
-                onChange={(val) => field.onChange(val)}
-                value={field.value}
-                styles={selectStyles}
-              />
-            )}
-          />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-600 font-medium">
+              Priority
+            </label>
+            <Controller
+              name="priority"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={priorityOptions}
+                  placeholder="Select Priority"
+                  styles={selectStyles}
+                />
+              )}
+            />
+          </div>
 
-          {/* Category */}
-          <Controller
-            name="category"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Select
-                {...field}
-                options={categoryOptions}
-                placeholder="Select Category"
-                onChange={(val) => field.onChange(val)}
-                value={field.value}
-                styles={selectStyles}
-              />
-            )}
-          />
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-gray-600 font-medium">
+              Category
+            </label>
+            <Controller
+              name="category"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  options={allCategory?.map((cat) => ({
+                    value: cat.id,
+                    label: cat.name,
+                  }))}
+                  placeholder="Select Category"
+                  styles={selectStyles}
+                />
+              )}
+            />
+          </div>
 
-          <div className="flex justify-center gap-x-10 mt-2">
-            <Button type="submit" variant="contained" color="primary">
-              Add Item
-            </Button>
-
-            <Button variant="contained" color="warning" onClick={closeModal}>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-4">
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={closeModal}
+              fullWidth={true}
+              sx={{ maxWidth: { sm: "120px" } }}
+            >
               Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth={true}
+              sx={{ maxWidth: { sm: "120px" } }}
+            >
+              Add Item
             </Button>
           </div>
         </form>
       </Modal>
 
-      {/* Inventory items */}
-      <section className="flex flex-col gap-y-3 overflow-y-auto max-h-[400px] mt-6">
-
-        <InventoryTable inventoryData={inventoryList}/>
-        
+      <section className="w-full mx-auto overflow-x-auto shadow-md rounded-lg border border-gray-200">
+        {/* <InventoryTable2
+          inventoryData={inventoryList}
+          onEdit={(item) => console.log("Edit", item)}
+          onDelete={(id) => console.log("Delete", id)}
+        /> */}
       </section>
     </div>
   );

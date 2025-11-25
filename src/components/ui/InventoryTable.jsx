@@ -11,7 +11,7 @@ import {
 
 function InventoryTable({ inventoryData }) {
   return (
-    <TableContainer component={Paper} className="max-h-96 overflow-y-scroll">
+    <TableContainer component={Paper}   className="max-h-96 overflow-y-auto">
       <Table stickyHeader>
         <TableHead className="">
           <TableRow className="">

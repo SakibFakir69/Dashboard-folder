@@ -5,6 +5,7 @@ import { FiBook, FiBox, FiLayers } from "react-icons/fi";
 import InventoryTable from "../../../components/ui/InventoryTable";
 
 function DashboardStats() {
+  
   const [inventoryList, setInventoryList] = useState([
     { name: "Headphone", category: "IT", priority: "High", number: 10 },
     { name: "Keyboard", category: "IT", priority: "Medium", number: 5 },
@@ -16,7 +17,7 @@ function DashboardStats() {
   ]);
 
   return (
-    <div className="w-full text-black p-4 md:p-6 flex flex-col justify-center -mr-10">
+    <div className="w-full text-black p-4 md:p-6 flex flex-col justify-center -mr-10 h-screen">
       {/* Cards Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
         <CardComponent Icon={<FiBox size={28} />} number={100} title="Total Items" />
@@ -27,7 +28,7 @@ function DashboardStats() {
     
       <h3 className="font-bold md:text-2xl mb-4">New add Inventory</h3>
 
-      <div className="w-full overflow-auto">
+      <div className="w-full overflow-auto ">
         <InventoryTable inventoryData={inventoryList} />
       </div>
     </div>

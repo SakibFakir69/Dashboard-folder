@@ -116,7 +116,7 @@ function Dashboard() {
           </p>
         </div>
 
-        <nav className="flex flex-col gap-4 mt-18">
+        <nav className="flex flex-col gap-4 mt-18 ">
           {links.map((link) => (
             <NavLink
               key={link.id}
@@ -169,7 +169,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className=" p-6 rounded-xl  min-h-[500px]">
+        <div className="rounded-xl flex flex-col bg-gray-100 h-screen">
           <Outlet />
         </div>
       </main>

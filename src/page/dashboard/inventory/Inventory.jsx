@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import Modal from "react-modal";
-
 import { customStyles } from "../../../style/modal";
 import { priorityOptions } from "../../../constant/priority";
 import Select from "react-select";
@@ -19,6 +18,10 @@ function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [createInventory] = useCreateInventoryMutation();
   const { data: allCategory } = useAllCategoryQuery();
+
+
+
+
   console.log(allCategory);
 
   const { register, handleSubmit, control, reset } = useForm({
@@ -146,7 +149,7 @@ function Inventory() {
 
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           <TextField
-            label="Item Name"
+            label="Inventory Name"
             {...register("name", { required: true })}
             fullWidth
             variant="outlined"

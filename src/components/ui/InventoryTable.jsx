@@ -8,8 +8,17 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import { useAllCategoryQuery } from "../../redux/features/api";
+
+
 
 function InventoryTable({ inventoryData }) {
+  const { data: allCategory } = useAllCategoryQuery();
+
+
+  
+
+
   return (
     <TableContainer component={Paper}   className="max-h-96 overflow-y-auto">
       <Table stickyHeader>
@@ -23,11 +32,15 @@ function InventoryTable({ inventoryData }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {inventoryData.map((item, index) => (
-            <TableRow key={index}>
+          {inventoryData.map((item, index) => {
+
+            const category = allCategory.find((categoryitems)=> categoryitems.id===item.category);
+
+            return (
+               <TableRow key={index}>
               <TableCell className="!text-blue-600">{index + 1}</TableCell>
               <TableCell>{item.name}</TableCell>
-              <TableCell>{item.category}</TableCell>
+              <TableCell>{category?.name ?? "none" }</TableCell>
 
               <TableCell
                 className={`!font-bold  ${
@@ -47,7 +60,8 @@ function InventoryTable({ inventoryData }) {
 
               
             </TableRow>
-          ))}
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>

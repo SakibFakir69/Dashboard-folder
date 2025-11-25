@@ -28,10 +28,10 @@ const { background, icon } = titleColors[title] || {
     >
       <CardContent className="flex flex-col gap-2">
         <div className="flex justify-between items-center pb-6">
-          <h3 className="font-semibold md:text-2xl">{title}</h3>
+          <h3 className="font-semibold md:text-2xl text-xl">{title}</h3>
           <div style={{ color: icon }}>{Icon}</div>
         </div>
-        <p className="md:text-2xl font-bold">{number}</p>
+        <p className="md:text-2xl text-xl font-bold">{number}</p>
       </CardContent>
     </Card>
   );

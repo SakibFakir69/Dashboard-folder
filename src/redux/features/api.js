@@ -19,7 +19,7 @@ export const api = createApi({
     // Register
     registerUser: builder.mutation({
       query: (data) => ({
-        url: "/auth/users/register/",
+        url: "/auth/register/",
         method: "POST",
         body: data,
       }),
@@ -28,7 +28,7 @@ export const api = createApi({
     // Login
     loginUser: builder.mutation({
       query: (data) => ({
-        url: "/auth/users/login/",
+        url: "/auth/login/",
         method: "POST",
         body: data,
       }),
@@ -37,17 +37,17 @@ export const api = createApi({
     // Send OTP
     sendOtp: builder.mutation({
       query: ({ email }) => ({
-        url: "/auth/me/email/request-verify/",
+        url: "/auth/email/verify/request/",
         method: "POST",
         body: { email },
-        // removed manual headers — prepareHeaders handles token
+
       }),
     }),
 
     // Verify OTP
     verifyOtp: builder.mutation({
       query: ({ email, otp }) => ({
-        url: "/auth/me/email/conform-verify/",
+        url: "/auth/email/verify/conform/",
         method: "POST",
         body: { email, otp },
         // removed manual headers — prepareHeaders handles token
@@ -111,7 +111,7 @@ export const api = createApi({
     // Resend password OTP
     resendPassword: builder.mutation({
       query: ({ email }) => ({
-        url: "/auth/me/email/request-verify/",
+        url: "/auth/email/verify/request/",
         method: "POST",
         body: { email },
 
@@ -220,8 +220,44 @@ export const api = createApi({
         body: data,
 
       }),
-      invalidatesTags:['Inventory']
+      invalidatesTags: ['Inventory']
     }),
+
+
+
+    /// share with others 
+
+    shareWithOtherInventory: builder.mutation({
+
+      query: (name) => ({
+        url: '/share/inventory/',
+        method: "POST",
+        body: name
+      }),
+      providesTags:['Share']
+
+
+    }),
+    allShareInventory:builder.query({
+      query:()=>({
+        url:'/share/inventory/',
+        method:"GET",
+      }),
+      invalidatesTags:['Share']
+    }),
+    /// delete
+    deleteShareInventory:builder.mutation({
+
+      query:(id)=>({
+        url:`/share/inventory/${id}/`,
+        method:"DELETE"
+
+      })
+
+
+
+      
+    })
 
 
 
@@ -234,6 +270,7 @@ export const api = createApi({
 });
 
 export const {
+
   useResendPasswordMutation,
   useRegisterUserMutation,
   useLoginUserMutation,
@@ -257,5 +294,14 @@ export const {
   useCreateInventoryMutation,
   useAllInventoryQuery,
   useDeleteInventoryMutation,
-  useOnUpdateInventoryMutation
+  useOnUpdateInventoryMutation,
+
+  // share
+
+  useShareWithOtherInventoryMutation,
+  useAllShareInventoryQuery,
+
+  useDeleteShareInventoryMutation
+
+
 } = api;

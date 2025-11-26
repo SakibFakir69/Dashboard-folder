@@ -36,35 +36,34 @@ function OtpVerification() {
     }
   };
 
-  const handleSubmit = async () => {
-    if (otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit OTP");
-      return;
-    }
+ const handleSubmit = async () => {
+  if (otp.length !== 6) {
+    toast.error("Please enter a valid 6-digit OTP");
+    return;
+  }
 
-    try {
-      const res = await verifyOtp({
-        email: decoded?.email,
-        otp,
-        token,
-      }).unwrap();
-      console.log(res, "verify response");
+  try {
+    const res = await verifyOtp({
+      email: decoded?.email,
+      otp,
+      token,
+    }).unwrap();
 
-      if (res?.detail) {
-        toast.success("Verified successfully");
-       
+    console.log(res, "verify response");
 
-        localStorage.removeItem("token");
 
-        setTimeout(() => navigate("/auth/login"), 2000);
-      } else {
-        toast.success("OTP verified!");
-      }
-    } catch (error) {
-      toast.error(error?.data?.detail || "OTP verification failed");
-      console.log(error);
-    }
-  };
+    toast.success(res?.message || "OTP verified successfully");
+
+    localStorage.removeItem("token");
+
+    navigate("/auth/login");  
+
+  } catch (error) {
+    toast.error(error?.data?.detail || "OTP verification failed");
+    console.log(error);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50 w-full p-4">

@@ -15,7 +15,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 Modal.setAppElement("#root");
 
 function Category() {
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editName, setEditName] = useState("");
@@ -28,8 +28,12 @@ function Category() {
   const [deleteCategory] = useDeleteCategoryMutation();
   const [editCategory, { isLoading: editLoading }] = useEditCategoryMutation();
 
-  const hanldelAddtoCategory = async () => {
-    if (!category) {
+  const handelAddtoCategory = async () => {
+
+    console.log(category);
+
+    
+    if (!category?.trim()) {
       toast.error("Please enter a category");
       return;
     }
@@ -86,7 +90,7 @@ function Category() {
 
   return (
     <div className="p-4 md:p-6">
-      {/* Add Category */}
+      
       <section className="flex flex-col md:flex-row gap-4 md:gap-x-6 mb-6">
         <TextField
           value={category}
@@ -95,7 +99,7 @@ function Category() {
           sx={{ width: "100%", "& .MuiInputBase-root": { height: "48px" } }}
         />
         <SearchButton
-          onClick={hanldelAddtoCategory}
+          onClick={handelAddtoCategory}
           title={categoryLoading ? "Adding..." : "Add"}
         />
       </section>

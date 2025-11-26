@@ -27,7 +27,10 @@ function Register() {
       const res = await registerUser(data).unwrap();
       const token = res?.access || res?.data?.access;
 
+      console.log(res);
+
       localStorage.setItem("token", token);
+
 
       // await sendOtp({ email: data?.email, token }).unwrap();
 

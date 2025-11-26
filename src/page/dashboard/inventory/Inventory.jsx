@@ -62,6 +62,8 @@ function Inventory() {
       category: data.category,
     };
 
+    console.log("data", itemData)
+
     try {
       if (editingItem) {
         const res = await onUpdateInventory({
@@ -73,7 +75,7 @@ function Inventory() {
       } else {
         const res = await createInventory(itemData).unwrap();
         toast.success("Item added successfully");
-        console.log(res);
+        console.log(res , 'inventory');
       }
     } catch (error) {
       console.log(error);

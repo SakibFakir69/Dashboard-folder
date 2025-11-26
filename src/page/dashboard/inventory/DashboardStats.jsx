@@ -35,7 +35,7 @@ function DashboardStats() {
   return (
     <div className="w-full text-black p-4 md:p-6 flex flex-col justify-center -mr-10 h-screen">
       {/* Cards Section */}
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6 md:-mt-36">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:-mt-20">
         <CardComponent
           Icon={<FiBox size={28} />}
           number={totalItems}

@@ -14,6 +14,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 function InventoryTable2({ inventoryData = [], onDelete, onEdit }) {
   const { data: allCategory } = useAllCategoryQuery();
 
+
   if (!inventoryData || inventoryData.length === 0) {
     return (
       <div className="p-4 text-center text-gray-500">

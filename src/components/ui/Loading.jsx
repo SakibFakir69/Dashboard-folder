@@ -1,11 +1,11 @@
 
 
 
-import React from 'react'
+import { CircularProgress } from '@mui/material'
 
 function Loading() {
   return (
-    <div>Loading ....</div>
+    <div> <CircularProgress /></div>
   )
 }
 

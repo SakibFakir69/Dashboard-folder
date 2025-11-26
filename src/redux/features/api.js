@@ -227,39 +227,30 @@ export const api = createApi({
 
     /// share with others 
 
-    shareWithOtherInventory: builder.mutation({
+   allShareInventory: builder.query({
+  query: () => ({
+    url: '/share/inventory/',
+    method: "GET",
+  }),
+  providesTags: ['Share'] // <-- This is important
+}),
 
-      query: (name) => ({
-        url: '/share/inventory/',
-        method: "POST",
-        body: name
-      }),
-      providesTags:['Share']
+shareWithOtherInventory: builder.mutation({
+  query: (name) => ({
+    url: '/share/inventory/',
+    method: "POST",
+    body: name
+  }),
+  invalidatesTags: ['Share'] // triggers refetch
+}),
 
-
-    }),
-    allShareInventory:builder.query({
-      query:()=>({
-        url:'/share/inventory/',
-        method:"GET",
-      }),
-      invalidatesTags:['Share']
-    }),
-    /// delete
-    deleteShareInventory:builder.mutation({
-
-      query:(id)=>({
-        url:`/share/inventory/${id}/`,
-        method:"DELETE"
-
-      })
-
-
-
-      
-    })
-
-
+deleteShareInventory: builder.mutation({
+  query: (id) => ({
+    url: `/share/inventory/${id}/`,
+    method: "DELETE"
+  }),
+  invalidatesTags: ['Share'] // triggers refetch
+})
 
 
 

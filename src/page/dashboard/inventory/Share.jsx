@@ -1,58 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@mui/material";
-import SearchButton from "../../../components/ui/SearchButton";
+import { Paper, TextField } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
+import SearchButton from "../../../components/ui/SearchButton";
+
+import InventoryTable2 from "../../../components/ui/InventoryTable2"; // import your table
 
 import {
   useAllShareInventoryQuery,
   useDeleteShareInventoryMutation,
   useShareWithOtherInventoryMutation,
 } from "../../../redux/features/api";
+import { MdDelete } from "react-icons/md";
 
 function Share() {
-  const [username, setUsername] = useState(""); 
-  const [inventories, setInventories] = useState([]); 
+  const [username, setUsername] = useState("");
+  const [inventories, setInventories] = useState([]);
 
   const [shareWithOtherInventory] = useShareWithOtherInventoryMutation();
   const { data: allShareInventory = [] } = useAllShareInventoryQuery();
   const [deleteShareInventory] = useDeleteShareInventoryMutation();
 
   const token = localStorage.getItem("token");
-  const currentUser = "sakib";
-  console.log(allShareInventory);
+  const currentUser = "google";
 
-
+  console.log(allShareInventory, " share user");
 
   useEffect(() => {
     if (!currentUser || !token) return;
 
-    const ws = new WebSocket(`ws://127.0.0.1:8020/ws/inventories/${currentUser}/`);
+    const ws = new WebSocket(
+      `ws://127.0.0.1:8020/ws/inventories/${currentUser}/`
+    );
 
     ws.onopen = () => {
       console.log("WebSocket connected");
-     
       ws.send(JSON.stringify({ Authorization: `Bearer ${token}` }));
     };
 
-    ws.onmessage =async (event) => {
+    ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log(data);
-    
+        console.log("WS Message:", data);
 
         switch (data.event) {
           case "initial":
-
-
             setInventories(data.inventories);
-
-
             break;
 
           case "create":
             setInventories((prev) => [...prev, data.inventory]);
-
-            
             break;
 
           case "update":
@@ -64,8 +60,9 @@ function Share() {
             break;
 
           case "delete":
-            
-            await handelDelete();
+            setInventories((prev) =>
+              prev.filter((inv) => inv.id !== data.inventory.id)
+            );
             break;
 
           default:
@@ -82,37 +79,17 @@ function Share() {
     return () => ws.close();
   }, [currentUser, token]);
 
-
-
-  // delete 
-
-  const handelDelete = async (id)=>{
-
-  try {
-
-    const res = await deleteShareInventory(id).unwrap();
-    toast.success("Delete");
-    
-  } catch (error) {
-    console.log(error);
-    
-  }
-  }
-
-  // create
-
-  const handleCreate = async ()=>{
-
+  const handleDelete = async (id) => {
+    console.log(id);
     try {
-
-      const res = await createin
-      
-    } catch (error) {
-      console.log(error);
-      
+      await deleteShareInventory(id).unwrap();
+      toast.success("Deleted successfully");
+    } catch (err) {
+      console.log(err);
+      toast.error(err.data?.detail || "Failed to delete");
     }
-  }
- 
+  };
+
   const handleShare = async () => {
     if (!username) {
       toast.error("Please enter a username to share with");
@@ -120,10 +97,12 @@ function Share() {
     }
 
     try {
-      const res = await shareWithOtherInventory({ shared_user: username }).unwrap();
+      const res = await shareWithOtherInventory({
+        shared_user: username,
+      }).unwrap();
       toast.success(`Inventory shared with ${username}`);
       console.log(res);
-      setUsername(""); 
+      setUsername("");
     } catch (err) {
       toast.error(err.data?.detail || "Failed to share inventory");
       console.error(err);
@@ -132,7 +111,7 @@ function Share() {
 
   return (
     <div className="p-4">
-      <Toaster position="top-right" />
+      <Toaster/>
 
       {/* Share input */}
       <section className="flex gap-x-6 mb-6 mt-6">
@@ -145,37 +124,26 @@ function Share() {
         <SearchButton onClick={handleShare} title="Share" />
       </section>
 
-      {/* Live updates */}
-      <h3 className="font-bold md:text-2xl text-black mt-6 mb-4">Live Inventory Updates</h3>
-      {inventories.length === 0 ? (
-        <p>No inventories to display</p>
-      ) : (
-        <ul className="space-y-2">
-          {inventories.map((inv) => (
-            <li
-              key={inv.id}
-              className="p-2 border rounded flex justify-between items-center"
-            >
-              <span>
-                {inv.name} - {inv.number} pcs - {inv.priority} - {inv.category}
-              </span>
-              <button
-                className="text-red-500 font-bold"
-                onClick={async () => {
-                  try {
-                    await deleteShareInventory(inv.id).unwrap();
-                    toast.success("Deleted successfully");
-                  } catch (err) {
-                    toast.error(err.data?.detail || "Failed to delete");
-                  }
-                }}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <h3 className="font-bold md:text-2xl text-black mt-6 mb-4">
+        Live share user list
+      </h3>
+
+      <Paper elevation={2} className="min-h-32 p-4 flex flex-col gap-4">
+        {allShareInventory.map((user, key) => (
+          <div
+            key={key}
+            className="flex items-center justify-between p-3 border rounded-md hover:shadow-md transition-shadow duration-200 border-gray-200"
+          >
+            <p className="text-gray-800 font-medium">{user.shared_user}</p>
+
+            <MdDelete
+              className="text-red-500 cursor-pointer hover:text-red-600"
+              size={24}
+              onClick={() => handleDelete(user.id)}
+            />
+          </div>
+        ))}
+      </Paper>
     </div>
   );
 }

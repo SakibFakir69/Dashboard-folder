@@ -9,7 +9,7 @@ import {
   useEditCategoryMutation,
 } from "../../../redux/features/api";
 import Loading from "../../../components/ui/Loading";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 Modal.setAppElement("#root");
@@ -19,7 +19,7 @@ function Category() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editName, setEditName] = useState("");
-  const [ id, setId ] = useState("");
+ 
 
   const { data: allCategory, isLoading } = useAllCategoryQuery();
 
@@ -28,14 +28,19 @@ function Category() {
   const [deleteCategory] = useDeleteCategoryMutation();
   const [editCategory, { isLoading: editLoading }] = useEditCategoryMutation();
 
+
+  // add category
+
   const handelAddtoCategory = async () => {
 
-    console.log(category);
+    console.log(category , 's');
 
     
-    if (!category?.trim()) {
+    if (!category || category.trim() === "") {
       toast.error("Please enter a category");
       return;
+    }else{
+      console.log(category , 'a')
     }
 
     try {
@@ -47,6 +52,9 @@ function Category() {
       toast.error("Failed to add category");
     }
   };
+
+
+  // delete category
 
   const handleDeleteCategory = async (id) => {
     try {
@@ -90,6 +98,8 @@ function Category() {
 
   return (
     <div className="p-4 md:p-6">
+
+      <Toaster/>
       
       <section className="flex flex-col md:flex-row gap-4 md:gap-x-6 mb-6">
         <TextField
@@ -98,19 +108,20 @@ function Category() {
           placeholder="Add your category..."
           sx={{ width: "100%", "& .MuiInputBase-root": { height: "48px" } }}
         />
-        <SearchButton
-          onClick={handelAddtoCategory}
-          title={categoryLoading ? "Adding..." : "Add"}
-        />
+        
+        <button onClick={handelAddtoCategory} className="h-12  md:mt-0 bg-blue-600  rounded text-white w-32 md:w-36 md:text-xl md:font-semibold w-1/2  "> {categoryLoading ? "Adding..." : "Add"}  </button>
       </section>
 
       <h3 className="font-bold md:text-2xl text-black mt-8 md:mt-12">
         All Categories
       </h3>
 
+
+      {/* show category */}
+
       <Paper elevation={2} className="p-4 mt-6 min-h-96">
         <section className="flex flex-wrap gap-4 ">
-          {allCategory.map((item) => (
+          {allCategory?.map((item) => (
             <div
               key={item.id}
               className="flex items-center border bg-white shadow-sm border-gray-300 rounded-md px-2 py-1 cursor-pointer"
@@ -134,6 +145,9 @@ function Category() {
           ))}
         </section>
       </Paper>
+
+
+
       {/* edit category */}
       <Modal
         isOpen={modalIsOpen}

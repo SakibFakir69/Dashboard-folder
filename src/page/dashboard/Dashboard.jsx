@@ -1,9 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FiClipboard, FiInbox, FiShoppingCart, FiShare2, FiMenu, FiX } from "react-icons/fi";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import {
+  FiClipboard,
+  FiInbox,
+  FiShoppingCart,
+  FiShare2,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
 import { getValidAccessToken } from "../../utils/auth";
-import { CircularProgress } from '@mui/material'
+import { CircularProgress } from "@mui/material";
 
 function Dashboard() {
   const location = useLocation();
@@ -45,9 +58,7 @@ function Dashboard() {
   };
 
   if (loading) {
-    return (
-      <CircularProgress />
-    );
+    return <CircularProgress />;
   }
 
   return (
@@ -72,34 +83,36 @@ function Dashboard() {
         </div>
 
         {/* Logo / title */}
-        <div className="px-4 md:mt-8">
+        <div className="px-4 md:mt-4">
           <h2 className="hidden md:block text-2xl font-bold mb-2 text-black">
             Inventory Manager
           </h2>
-          <p className="text-gray-500 text-sm text-center md:text-left">
+          <p className="text-gray-500 text-sm text-center md:ml-0 -ml-8 md:text-left">
             Business Management System
           </p>
         </div>
 
         {/* Nav links */}
-        <nav className="flex flex-col gap-3 mt-6 px-4">
-          {links.map((link) => (
-            <NavLink
-              key={link.id}
-              to={link.route}
-              className={({ isActive }) =>
-                `flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 hover:bg-gray-200"
-                }`
-              }
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              {link.icon}
-              <span className="font-medium">{link.title}</span>
-            </NavLink>
-          ))}
+        <nav className="flex flex-col h-screen px-4 pt-6">
+          <div className="flex-1 flex flex-col gap-3">
+            {links.map((link) => (
+              <NavLink
+                key={link.id}
+                to={link.route}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 p-2 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-700 hover:bg-gray-200"
+                  }`
+                }
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                {link.icon}
+                <span className="font-medium">{link.title}</span>
+              </NavLink>
+            ))}
+          </div>
         </nav>
       </aside>
 

@@ -85,6 +85,8 @@ function Share() {
     }
   };
 
+
+
   const handleShare = async () => {
     if (!username) {
       toast.error("Please enter a username to share with");
@@ -121,7 +123,7 @@ function Share() {
 
       <button
         onClick={openModal}
-        className="bg-blue-600 text-xl text-white p-3 md:w-44 rounded mb-4"
+        className="bg-blue-600 text-xl text-white p-2.5 md:w-44 rounded mb-4"
       >
         share user list
       </button>
@@ -167,15 +169,14 @@ function Share() {
       <section>
         <InventoryTable3
           onDelete={handleDelete}
+         
           wsUrl={wsUrl}
           token={token}
           inventoryData={inventories}
         />
       </section>
 
-      <h3 className="font-bold md:text-2xl text-black mt-6 mb-4">
-        Live share user list
-      </h3>
+     
     </div>
   );
 }

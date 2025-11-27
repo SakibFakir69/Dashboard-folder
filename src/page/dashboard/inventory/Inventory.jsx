@@ -17,9 +17,9 @@ import {
 } from "../../../redux/features/api";
 import toast, { Toaster } from "react-hot-toast";
 import InventoryTable2 from "../../../components/ui/InventoryTable2";
-import { selectStylesInventory } from "../../../style/modal";
-import { responsiveModalStylesInventory } from "../../../style/modal";
-import { selectStyles } from "../../../style/modal";
+// import { selectStylesInventory } from "../../../style/modal";
+// import { responsiveModalStylesInventory } from "../../../style/modal";
+// import { selectStyles } from "../../../style/modal";
 
 function Inventory() {
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -31,7 +31,7 @@ function Inventory() {
 
   const [deleteInventory] = useDeleteInventoryMutation();
 
-  const { register, handleSubmit, control, reset } = useForm({
+  const {  reset } = useForm({
     defaultValues: {
       name: "",
       number: "",
@@ -125,7 +125,7 @@ function Inventory() {
     );
   };
 
-  // edit
+  
 
   return (
     <div className="p-4 md:p-6 w-full   min-h-screen">
@@ -155,112 +155,7 @@ function Inventory() {
         </div>
       </section>
 
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={responsiveModalStylesInventory}
-        contentLabel="Add Inventory Modal"
-        ariaHideApp={false}
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg md:text-xl font-bold text-black">
-            Add item to inventory
-          </h2>
-          <button
-            onClick={closeModal}
-            className="text-gray-500 hover:text-red-500 font-bold"
-          >
-            ✕
-          </button>
-        </div>
-
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            label="Inventory Name"
-            {...register("name", { required: true })}
-            fullWidth
-            variant="outlined"
-          />
-
-          <TextField
-            label="Number"
-            type="number"
-            {...register("number", { required: true })}
-            fullWidth
-            variant="outlined"
-          />
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600 font-medium">
-              Priority
-            </label>
-            <Controller
-              name="priority"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={priorityOptions}
-                  placeholder="Select Priority"
-                  styles={selectStylesInventory}
-                />
-              )}
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600 font-medium">
-              Category
-            </label>
-            <Controller
-              name="category"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={
-                    allCategory
-                      ?.map((cat) => ({ value: cat.id, label: cat.name }))
-                      .find((opt) => opt.value === field.value) || null
-                  }
-                  onChange={(selected) =>
-                    field.onChange(selected?.value || null)
-                  }
-                  options={allCategory?.map((cat) => ({
-                    value: cat.id,
-                    label: cat.name,
-                  }))}
-                  placeholder="Select Category"
-                  styles={selectStyles}
-                />
-              )}
-            />
-          </div>
-
-          <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-4">
-            <Button
-              variant="contained"
-              color="warning"
-              onClick={closeModal}
-              fullWidth={true}
-              sx={{ maxWidth: { sm: "120px" } }}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth={true}
-              sx={{ maxWidth: { sm: "120px" } }}
-            >
-              Add Item
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      
 
       <section className="w-full mx-auto overflow-x-auto shadow-md rounded-lg border border-gray-200">
         {isLoading ? (

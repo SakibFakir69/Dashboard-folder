@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// InventoryTable3.jsx — FINAL CLEAN VERSION (NO WebSocket!)
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,7 +8,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress,
   TextField,
   Button,
 } from "@mui/material";
@@ -25,79 +25,25 @@ const priorityOptions = [
   { value: "Low", label: "Low" },
 ];
 
-function InventoryTable3({ wsUrl, token, onDelete, allCategory }) {
-  const [inventories, setInventories] = useState([]);
-  const [loading, setLoading] = useState(true);
+function InventoryTable3({ inventoryData, onDelete, allCategory }) {
   const [editItem, setEditItem] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const [updateInventory, { isLoading: updating }] = useOnUpdateInventoryMutation();
+  const { register, handleSubmit, control, reset, setValue } = useForm();
 
-  const { register, handleSubmit, control, reset } = useForm({
-    defaultValues: {
-      name: "",
-      number: "",
-      priority: null,
-      category: null,
-    },
-  });
+  console.log(inventoryData)
 
-  // WebSocket for real-time updates
-  useEffect(() => {
-    if (!wsUrl || !token) return;
-
-    const ws = new WebSocket(wsUrl);
-
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-      ws.send(JSON.stringify({ Authorization: `Bearer ${token}` }));
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        switch (data.event) {
-          case "initial":
-            setInventories(data.inventories);
-            setLoading(false);
-            break;
-          case "create":
-            setInventories((prev) => [...prev, data.inventory]);
-            break;
-          case "update":
-            setInventories((prev) =>
-              prev.map((inv) => (inv.id === data.inventory.id ? data.inventory : inv))
-            );
-            break;
-          case "delete":
-            setInventories((prev) => prev.filter((inv) => inv.id !== data.inventory.id));
-            break;
-          default:
-            console.log("Unknown event:", data);
-        }
-      } catch (err) {
-        console.error("WS message parse error:", err);
-      }
-    };
-
-    ws.onerror = (err) => console.error("WebSocket error:", err);
-    ws.onclose = () => console.log("WebSocket disconnected");
-
-    return () => ws.close();
-  }, [wsUrl, token]);
-
-  // Open edit modal
   const handleEditOpen = (item) => {
     setEditItem(item);
-    reset({
-      name: item.name,
-      number: item.number,
-      priority: priorityOptions.find((p) => p.value === item.priority),
-      category:
-        allCategory?.map((cat) => ({ value: cat.id, label: cat.name })).find(
-          (opt) => opt.value === item.category
-        ) || null,
-    });
+    setValue("name", item.name || "");
+    setValue("number", item.number || "");
+    setValue("priority", priorityOptions.find(p => p.value === item.priority) || null);
+    setValue(
+      "category",
+      allCategory?.map(cat => ({ value: cat.id, label: cat.name }))
+        .find(opt => opt.value === (item.category?.id || item.category)) || null
+    );
     setModalIsOpen(true);
   };
 
@@ -107,7 +53,6 @@ function InventoryTable3({ wsUrl, token, onDelete, allCategory }) {
     reset();
   };
 
-  // Submit updated inventory
   const onSubmit = async (data) => {
     if (!editItem) return;
 
@@ -120,70 +65,59 @@ function InventoryTable3({ wsUrl, token, onDelete, allCategory }) {
 
     try {
       await updateInventory({ id: editItem.id, ...payload }).unwrap();
-
-  
-      setInventories((prev) =>
-        prev.map((inv) => (inv.id === editItem.id ? { ...inv, ...payload } : inv))
-      );
-      toast.success("update successfully")
-
+      toast.success("Updated successfully!");
       handleEditClose();
-    } catch (error) {
-      console.error("Update failed:", error);
+    } catch (err) {
+      toast.error("Update failed",err);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center p-6">
-        <CircularProgress />
-      </div>
-    );
+  if (!inventoryData || inventoryData.length === 0) {
+    return <p className="text-center py-12 text-gray-500">No inventory shared with you yet</p>;
   }
 
   return (
     <>
-      <TableContainer component={Paper} className="max-h-96 overflow-y-auto">
+      <TableContainer component={Paper} className="shadow-lg mt-8">
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell className="!font-semibold text-gray-600">ID</TableCell>
-              <TableCell className="!font-semibold text-gray-600">Name</TableCell>
-              <TableCell className="!font-semibold text-gray-600">Category</TableCell>
-              <TableCell className="!font-semibold text-gray-600">Priority</TableCell>
-              <TableCell className="!font-semibold text-gray-600">Number</TableCell>
-              <TableCell className="!font-semibold text-gray-600">Actions</TableCell>
+              <TableCell className="!font-bold text-gray-700">ID</TableCell>
+              <TableCell className="!font-bold text-gray-700">Name</TableCell>
+              <TableCell className="!font-bold text-gray-700">Category</TableCell>
+              <TableCell className="!font-bold text-gray-700">Priority</TableCell>
+              <TableCell className="!font-bold text-gray-700">Number</TableCell>
+              <TableCell className="!font-bold text-gray-700">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {inventories.map((item, index) => (
-              <TableRow key={item.id}>
-                <TableCell className="!text-blue-600">{index + 1}</TableCell>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.category?.name || item.category}</TableCell>
-                <TableCell
-                  className={`!font-bold ${
-                    item.priority === "High"
-                      ? "!text-red-500"
-                      : item.priority === "Medium"
-                      ? "!text-yellow-500"
-                      : "!text-green-500"
-                  }`}
-                >
-                  {item.priority}
+            {inventoryData.map((item, index) => (
+              <TableRow key={item.id} hover>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell className="font-medium">{item.name}</TableCell>
+                <TableCell>{item.category || "—"}</TableCell>
+                <TableCell>
+                  <span className={`font-bold ${
+                    item.priority === "High" ? "text-red-600" :
+                    item.priority === "Medium" ? "text-yellow-600" : "text-green-600"
+                  }`}>
+                    {item.priority}
+                  </span>
                 </TableCell>
-                <TableCell className="!font-bold">{item.number}</TableCell>
-                <TableCell className="!flex gap-x-4">
-                  <MdDelete
-                    className="text-red-500 cursor-pointer hover:text-red-600"
-                    size={20}
-                    onClick={() => onDelete(item.id)}
-                  />
-                  <MdEdit
-                    size={20}
-                    className="text-blue-500 cursor-pointer hover:text-blue-600"
-                    onClick={() => handleEditOpen(item)}
-                  />
+                <TableCell className="font-semibold">{item.number}</TableCell>
+                <TableCell>
+                  <div className="flex gap-4">
+                    <MdDelete
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
+                      size={22}
+                      onClick={() => onDelete(item.id)}
+                    />
+                    <MdEdit
+                      className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                      size={22}
+                      onClick={() => handleEditOpen(item)}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -191,77 +125,43 @@ function InventoryTable3({ wsUrl, token, onDelete, allCategory }) {
         </Table>
       </TableContainer>
 
-  
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={handleEditClose}
-        style={responsiveModalStylesInventory}
-        ariaHideApp={false}
-        contentLabel="Edit Inventory"
-      >
-        <h2 className="text-lg md:text-xl font-bold mb-6">Edit Inventory</h2>
+      <Modal isOpen={modalIsOpen} onRequestClose={handleEditClose} style={responsiveModalStylesInventory} ariaHideApp={false}>
+        <h2 className="text-2xl font-bold mb-6">Edit Inventory</h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <TextField label="Name" {...register("name", { required: true })} fullWidth />
+          <TextField label="Number" type="number" {...register("number", { required: true })} fullWidth />
 
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            label="Inventory Name"
-            {...register("name", { required: true })}
-            fullWidth
-          />
-
-          <TextField
-            label="Number"
-            type="number"
-            {...register("number", { required: true })}
-            fullWidth
-          />
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600 font-medium">Priority</label>
+          <div>
+            <label className="block text-sm font-medium mb-1">Priority</label>
             <Controller
               name="priority"
               control={control}
               render={({ field }) => (
-                <Select
-                  {...field}
-                  options={priorityOptions}
-                  placeholder="Select Priority"
-                  styles={selectStylesInventory}
-                />
+                <Select {...field} options={priorityOptions} styles={selectStylesInventory} placeholder="Select Priority" />
               )}
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-gray-600 font-medium">Category</label>
+          <div>
+            <label className="block text-sm font-medium mb-1">Category</label>
             <Controller
               name="category"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
-                  value={
-                    allCategory
-                      ?.map((cat) => ({ value: cat.id, label: cat.name }))
-                      .find((opt) => opt.value === field.value) || null
-                  }
-                  onChange={(selected) => field.onChange(selected)}
-                  options={allCategory?.map((cat) => ({
-                    value: cat.id,
-                    label: cat.name,
-                  }))}
-                  placeholder="Select Category"
+                  options={allCategory?.map(cat => ({ value: cat.id, label: cat.name })) || []}
                   styles={selectStylesInventory}
+                  placeholder="Select Category"
                 />
               )}
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-4">
-            <Button variant="outlined" color="warning" onClick={handleEditClose}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="contained" color="primary" disabled={updating}>
-              {updating ? "Saving..." : "Save"}
+          <div className="flex justify-end gap-3 pt-6">
+            <Button variant="outlined" color="error" onClick={handleEditClose}>Cancel</Button>
+            <Button type="submit" variant="contained" disabled={updating}>
+              {updating ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </form>

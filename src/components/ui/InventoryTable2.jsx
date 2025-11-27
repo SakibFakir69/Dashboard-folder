@@ -27,7 +27,7 @@ function InventoryTable2({ inventoryData = [], onDelete, onEdit }) {
     <TableContainer component={Paper} className="max-h-96 overflow-y-auto">
       <Table stickyHeader>
         <TableHead>
-          <TableRow>
+          <TableRow className="!space-x-10 md:space-x-0">
             <TableCell className="!font-semibold text-gray-600">ID</TableCell>
             <TableCell className="!font-semibold text-gray-600">Name</TableCell>
             <TableCell className="!font-semibold text-gray-600">

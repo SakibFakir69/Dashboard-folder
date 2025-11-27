@@ -29,6 +29,8 @@ const onSubmit = async (data) => {
 
     localStorage.setItem("token", res?.access);
     localStorage.setItem("refToken", res?.refresh);
+    localStorage.setItem("username", data?.username);
+    console.log(data?.username)
 
     toast.success("Login Successful");
     navigate("/");

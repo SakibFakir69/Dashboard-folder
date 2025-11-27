@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Paper, TextField } from "@mui/material";
+import { LinearProgress, Paper, TextField } from "@mui/material";
 import SearchButton from "../../../components/ui/SearchButton";
 import Modal from "react-modal";
 import {
@@ -19,10 +19,7 @@ function Category() {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editName, setEditName] = useState("");
- 
-
   const { data: allCategory, isLoading } = useAllCategoryQuery();
-
   const [createCategory, { isLoading: categoryLoading }] =
     useCreateCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
@@ -66,11 +63,17 @@ function Category() {
     }
   };
 
+
+  // open modal
+
   const openEditModal = (item) => {
     setEditingCategory(item);
     setEditName(item.name);
     setIsOpen(true);
   };
+
+
+  // close modal
 
   const closeModal = () => {
     setIsOpen(false);
@@ -79,6 +82,8 @@ function Category() {
   };
 
   console.log(editingCategory)
+
+  // edit category
 
   const handleEditCategory = async (e) => {
     e.preventDefault();
@@ -93,8 +98,13 @@ function Category() {
       toast.error("Failed to update category");
     }
   };
-
-  if (isLoading) return <Loading />;
+// loading
+  if (isLoading) return(
+    <div className="mt-64 flex justify-center ">
+       <Loading />
+    </div>
+  )
+  ;
 
   return (
     <div className="p-4 md:p-6">
@@ -120,6 +130,9 @@ function Category() {
       {/* show category */}
 
       <Paper elevation={2} className="p-4 mt-6 min-h-96">
+
+        
+      
         <section className="flex flex-wrap gap-4 ">
           {allCategory?.map((item) => (
             <div

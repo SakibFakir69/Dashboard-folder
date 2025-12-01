@@ -33,7 +33,7 @@ const onSubmit = async (data) => {
     console.log(data?.username)
 
     toast.success("Login Successful");
-    navigate("/");
+    navigate("/dashboard");
   } catch (error) {
     toast.error(error?.data?.detail || "Invalid credentials");
   }

@@ -15,8 +15,9 @@ import {
   FiX,
 } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
-import { getValidAccessToken } from "../../utils/auth";
+
 import { CircularProgress } from "@mui/material";
+import { getValidAccessToken } from "../../utils/auth";
 
 function Dashboard() {
   const location = useLocation();
@@ -40,6 +41,7 @@ function Dashboard() {
   useEffect(() => {
     const checkTokens = async () => {
       const validToken = await getValidAccessToken();
+      console.log(validToken, ' valid token');
       if (!validToken) {
         toast.error("Session expired. Please login again.");
         localStorage.clear();

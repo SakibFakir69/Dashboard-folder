@@ -9,32 +9,29 @@ import { MdDelete } from "react-icons/md";
 import {
   useAllShareInventoryQuery,
   useDeleteInventoryMutation,
+  useDeleteShareInventoryMutation,
   useShareWithOtherInventoryMutation,
 } from "../../../redux/features/api";
+import { useDispatch } from "react-redux";
 
 function Share() {
   const [username, setUsername] = useState("");
   const [inventories, setInventories] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
-  const {
-    data:allShareInventory} = useAllShareInventoryQuery();
 
-  const [ track , setTrack ] = useState("");
-
-  const token = localStorage.getItem("token") || "";
-  const currentUser = localStorage.getItem("username");
-  console.log(currentUser , " current user")
-
+  // RTK Query Hooks
+  const { data: allShareInventory } = useAllShareInventoryQuery();
   const [deleteInventory] = useDeleteInventoryMutation();
   const [shareWithOtherInventory] = useShareWithOtherInventoryMutation();
-
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
+  const [deleteShareInventory] = useDeleteShareInventoryMutation();
   
+  // Auth Data
+  const token = localStorage.getItem("token") || "";
+  const currentUser = localStorage.getItem("username");
+  const dispatch = useDispatch();
+
   const wsUrl = `ws://127.0.0.1:8020/ws/inventories/${currentUser}/?token=${token}`;
 
-  
   useEffect(() => {
     if (!token || !currentUser) {
       toast.error("No token or user");
@@ -42,6 +39,11 @@ function Share() {
     }
 
     const ws = new WebSocket(wsUrl);
+
+    // Helper to force RTK Query to refetch the "Shared With" user list
+    const invalidateShareCache = () => {
+      dispatch({ type: 'api/invalidateTags', payload: ['Share'] });
+    };
 
     ws.onopen = () => {
       console.log("WebSocket Connected →", currentUser);
@@ -51,24 +53,23 @@ function Share() {
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("Live Event:", data);
-        setTrack(data?.event);
+        console.log("Live Event:", data.event);
 
         switch (data.event) {
-        
           case "initial":
-            
             setInventories(data.inventories || []);
             break;
 
-          case "create":
-          case "share":
+          case "share": // In case backend sends specific 'share' event
+          case "create": // Standard event when item is added/shared
             setInventories((prev) => {
               const exists = prev.some((i) => i.id === data.inventory.id);
               if (exists) return prev;
-              toast.success(`New item shared with you!`);
+              toast.success(`New item received!`);
               return [...prev, data.inventory];
             });
+            // Optional: Refresh user list if item creation affects it
+            invalidateShareCache(); 
             break;
 
           case "update":
@@ -81,12 +82,12 @@ function Share() {
             setInventories((prev) =>
               prev.filter((i) => i.id !== data.inventory_id)
             );
-            toast.success("One shared item was removed");
+            toast.success("Item removed");
+            invalidateShareCache();
             break;
 
           case "error":
             toast.error(data.message || "Access denied");
-            ws.close();
             break;
 
           default:
@@ -104,15 +105,15 @@ function Share() {
 
     ws.onclose = () => {
       console.log("WebSocket closed");
-      toast("Live updates OFF", { icon: "Warning", duration: 3000 });
     };
 
     return () => ws.close();
-  }, [currentUser, token , track]);
-  console.log(track); 
-  // track run useeffect any change webscoket
+  }, [currentUser, token, dispatch]);
 
-  // Share with another user
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
+
+  // Share with another user (Mutation updates Modal automatically via tags)
   const handleShare = async () => {
     if (!username.trim()) return toast.error("Enter a username");
 
@@ -126,10 +127,20 @@ function Share() {
     }
   };
 
-  // Delete shared access
+  // Delete item (Mutation updates Table automatically via WebSocket 'delete' event)
   const handleDelete = async (id) => {
     try {
       await deleteInventory(id).unwrap();
+      // No toast needed here if WebSocket sends "delete" event back
+    } catch (err) {
+      toast.error(err.data?.detail || "Delete failed");
+    }
+  };
+
+  // Delete shared user (Mutation updates Modal automatically via tags)
+  const handelDeleteShareUser = async (id) => {
+    try {
+      await deleteShareInventory(id).unwrap();
       toast.success("Removed successfully");
     } catch (err) {
       toast.error(err.data?.detail || "Delete failed");
@@ -160,7 +171,7 @@ function Share() {
         View Shared Users
       </button>
 
-      {/* Modal — List of users you shared with */}
+      {/* User List Modal */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -179,14 +190,14 @@ function Share() {
         </div>
 
         <Paper className="p-6 min-h-64">
-          {inventories.length === 0 ? (
+          {(!allShareInventory || allShareInventory.length === 0) ? (
             <p className="text-center text-gray-500 py-8">No shares yet</p>
           ) : (
             <div className="space-y-3">
-              {allShareInventory?.map((item) => (
+              {allShareInventory.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border hover:shadow transition"
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border hover:shadow transition border-gray-300/20"
                 >
                   <p className="text-lg font-medium text-gray-800">
                     {item.shared_user}
@@ -194,7 +205,7 @@ function Share() {
                   <MdDelete
                     className="text-red-500 hover:text-red-700 cursor-pointer transition"
                     size={26}
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handelDeleteShareUser(item.id)}
                   />
                 </div>
               ))}
@@ -203,13 +214,9 @@ function Share() {
         </Paper>
       </Modal>
 
-      {/* Table of your inventory */}
+      {/* Inventory Table */}
       <section>
-        <InventoryTable3
-          inventoryData={inventories}
-          onDelete={handleDelete}
-        
-        />
+        <InventoryTable3 inventoryData={inventories} onDelete={handleDelete} />
       </section>
     </div>
   );

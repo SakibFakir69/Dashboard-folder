@@ -1,65 +1,62 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { axiosBaseQuery } from "../../utils/axiosBaseQuery";
 
 export const api = createApi({
   reducerPath: "userAuth",
-  baseQuery: fetchBaseQuery({
-    // eslint-disable-next-line no-undef
-    baseUrl: import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8020',
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      headers.set("Content-Type", "application/json");
-      return headers;
-    },
-  }),
+
+  baseQuery: axiosBaseQuery(),
+
+  tagTypes: ["Category", "Inventory", "Share"],
 
   endpoints: (builder) => ({
-    // Register
+
+    // --------------- REFRESH-------------
+    refreshToken: builder.mutation({
+      query: (data) => ({
+        url: "/auth/login/refresh/",
+        method: "POST",
+        data,
+      }),
+    }),
+
+    // ---------------- AUTH ----------------
     registerUser: builder.mutation({
       query: (data) => ({
         url: "/auth/register/",
         method: "POST",
-        body: data,
+        data,
       }),
     }),
 
-    // Login
     loginUser: builder.mutation({
       query: (data) => ({
         url: "/auth/login/",
         method: "POST",
-        body: data,
+        data,
       }),
     }),
 
-    // Send OTP
     sendOtp: builder.mutation({
       query: ({ email }) => ({
         url: "/auth/email/verify/request/",
         method: "POST",
-        body: { email },
-
+        data: { email },
       }),
     }),
 
-    // Verify OTP
     verifyOtp: builder.mutation({
       query: ({ email, otp }) => ({
         url: "/auth/email/verify/conform/",
         method: "POST",
-        body: { email, otp },
-        // removed manual headers — prepareHeaders handles token
+        data: { email, otp },
       }),
     }),
 
-    // Forgot Password
     forgotPasswordSendOtp: builder.mutation({
-      query: (email) => ({
+      query: ({ email }) => ({
         url: "/auth/user/forgot-password/send-otp/",
         method: "POST",
-        body: { email },
+        data: { email },
       }),
     }),
 
@@ -67,201 +64,141 @@ export const api = createApi({
       query: ({ email, otp }) => ({
         url: "/auth/user/forgot-password/verify-otp/",
         method: "POST",
-        body: { email, otp },
+        data: { email, otp },
       }),
     }),
 
-    // Reset password
     resetPassword: builder.mutation({
       query: ({ email, otp, new_password }) => ({
         url: "/auth/user/forgot-password/reset/",
         method: "POST",
-        body: { email, otp, new_password },
+        data: { email, otp, new_password },
       }),
     }),
 
-    // Change password
     changePassword: builder.mutation({
-      query: ({ old_password, new_password, token }) => ({
+      query: ({ old_password, new_password }) => ({
         url: "/auth/users/me/change-password/",
         method: "POST",
-        body: { old_password, new_password },
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        data: { old_password, new_password },
       }),
     }),
 
-
-    // Update profile
     updateProfile: builder.mutation({
-      query: ({ data, token }) => ({
+      query: (data) => ({
         url: "/auth/users/me/",
         method: "PUT",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        data,
       }),
     }),
 
-
-    // Resend password OTP
     resendPassword: builder.mutation({
       query: ({ email }) => ({
         url: "/auth/email/verify/request/",
         method: "POST",
-        body: { email },
-
+        data: { email },
       }),
     }),
 
-    // Refresh token
-    refreshToken: builder.mutation({
-      query: (refreshToken) => ({
-        url: "/auth/users/login/refresh/",
-        method: "POST",
-        body: refreshToken,
-      }),
-    }),
-
-
-
-    // category ------------------------------
-
+    // ---------------- CATEGORY ----------------
     createCategory: builder.mutation({
       query: (data) => ({
-
-        url: '/category/',
+        url: "/category/",
         method: "POST",
-        body: data
+        data,
       }),
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
 
-    // all category
     allCategory: builder.query({
       query: () => ({
-        url: '/category/',
+        url: "/category/",
         method: "GET",
       }),
-      providesTags: ['Category']
+      providesTags: ["Category"],
     }),
-
-    // delete category
 
     deleteCategory: builder.mutation({
-      query: (deleteById) => ({
-
-        url: `/category/${deleteById}/`,
-        method: "DELETE"
-
+      query: (id) => ({
+        url: `/category/${id}/`,
+        method: "DELETE",
       }),
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
-
-    // edit category
 
     editCategory: builder.mutation({
       query: ({ id, ...data }) => ({
-
         url: `/category/${id}/`,
         method: "PATCH",
-        body: data
-
+        data,
       }),
-      invalidatesTags: ['Category']
+      invalidatesTags: ["Category"],
     }),
 
-
-
-
-    // inventory -------------------------------------------------
+    // ---------------- INVENTORY ----------------
     createInventory: builder.mutation({
       query: (data) => ({
-        url: '/inventory/',
+        url: "/inventory/",
         method: "POST",
-        body: data
-
-
+        data,
       }),
-      invalidatesTags: ['Inventory']
+      invalidatesTags: ["Inventory"],
     }),
-    // show all inventory 
 
     allInventory: builder.query({
       query: () => ({
-        url: '/inventory',
+        url: "/inventory",
         method: "GET",
-
-
       }),
-      providesTags: ['Inventory']
+      providesTags: ["Inventory"],
     }),
-    // delete invetory 
 
     deleteInventory: builder.mutation({
-      query: (deleteById) => ({
-        url: `/inventory/${deleteById}/`,
+      query: (id) => ({
+        url: `/inventory/${id}/`,
         method: "DELETE",
-
       }),
-      invalidatesTags: ['Inventory']
+      invalidatesTags: ["Inventory"],
     }),
-
-    // update
 
     onUpdateInventory: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/inventory/${id}/`,
         method: "PUT",
-        body: data,
-
+        data,
       }),
-      invalidatesTags: ['Inventory']
+      invalidatesTags: ["Inventory"],
     }),
 
-
-
-    /// share with others 
-
+    // ---------------- SHARE INVENTORY ----------------
     allShareInventory: builder.query({
       query: () => ({
-        url: '/share/inventory/',
+        url: "/share/inventory/",
         method: "GET",
       }),
-      providesTags: ['Share']
+      providesTags: ["Share"],
     }),
 
     shareWithOtherInventory: builder.mutation({
-      query: (name) => ({
-        url: '/share/inventory/',
+      query: (data) => ({
+        url: "/share/inventory/",
         method: "POST",
-        body: name
+        data,
       }),
-      invalidatesTags: ['Share']
+      invalidatesTags: ["Share"],
     }),
 
     deleteShareInventory: builder.mutation({
       query: (id) => ({
         url: `/share/inventory/${id}/`,
-        method: "DELETE"
+        method: "DELETE",
       }),
-      invalidatesTags: ['Share']
-    })
-
-
-
-
-
-
+      invalidatesTags: ["Share"],
+    }),
   }),
 });
 
 export const {
-
   useResendPasswordMutation,
   useRegisterUserMutation,
   useLoginUserMutation,
@@ -273,26 +210,20 @@ export const {
   useChangePasswordMutation,
   useUpdateProfileMutation,
 
-
-  // category
+  // Category
   useAllCategoryQuery,
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   useEditCategoryMutation,
 
-  // inventory
-
+  // Inventory
   useCreateInventoryMutation,
   useAllInventoryQuery,
   useDeleteInventoryMutation,
   useOnUpdateInventoryMutation,
 
-  // share
-
+  // Share
   useShareWithOtherInventoryMutation,
   useAllShareInventoryQuery,
-
-  useDeleteShareInventoryMutation
-
-
+  useDeleteShareInventoryMutation,
 } = api;

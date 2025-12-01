@@ -27,6 +27,7 @@ function Category() {
 
 
   // add category
+  console.log(allCategory, ' categorty')
 
   const handelAddtoCategory = async () => {
 

@@ -38,20 +38,31 @@ function Dashboard() {
     { id: 4, title: "Share", route: "/share", icon: <FiShare2 /> },
   ];
 
-  useEffect(() => {
-    const checkTokens = async () => {
+useEffect(() => {
+  const checkTokens = async () => {
+    try {
       const validToken = await getValidAccessToken();
-      console.log(validToken, ' valid token');
+      console.log(validToken, 'valid token');
+
       if (!validToken) {
         toast.error("Session expired. Please login again.");
         localStorage.clear();
         navigate("/auth/login");
         return;
       }
-      setLoading(false);
-    };
-    checkTokens();
-  }, [navigate]);
+    } catch (err) {
+      console.error(err);
+      toast.error("Session check failed. Please login again.");
+      localStorage.clear();
+      navigate("/auth/login");
+    } finally {
+      setLoading(false); // always stop loading
+    }
+  };
+
+  checkTokens();
+}, [navigate]);
+
 
   const handleLogout = () => {
     localStorage.clear();

@@ -6,7 +6,6 @@ import { useAllInventoryQuery } from "../../../redux/features/api";
 
 function DashboardStats() {
   const { data: allInventory } = useAllInventoryQuery();
-
   const [totalItems, setTotalItems] = useState(0);
   const [category, setCategory] = useState([]);
   const [stock, setStock] = useState(0);

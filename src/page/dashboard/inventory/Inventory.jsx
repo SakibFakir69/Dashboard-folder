@@ -189,8 +189,8 @@ function Inventory() {
               />
             )}
           />
-          <div className="flex md:justify-end justify-center gap-2 mt-2">
-            <Button variant="outlined" onClick={closeModal}>
+          <div className="flex md:justify-end justify-center gap-2 mt-2 text-red-400">
+            <Button className="!border" variant="" onClick={closeModal}>
               Cancel
             </Button>
 

@@ -36,95 +36,6 @@ function Share() {
 
   const wsUrl = `ws://127.0.0.1:8020/ws/inventories/${currentUser}/?token=${token}`;
 
-  // -------------------- WebSocket Setup --------------------
-  // const setupWebSocket = () => {
-  //   if (!token || !currentUser) return;
-
-  //   if (wsRef.current) wsRef.current.close();
-
-  //   const ws = new WebSocket(wsUrl);
-  //   wsRef.current = ws;
-
-  //   ws.onopen = () => {
-  //     console.log("WebSocket Connected →", currentUser);
-  //     toast.success("Live updates ON", { duration: 2000 });
-  //   };
-
-  //   ws.onmessage = (event) => {
-  //     try {
-  //       const data = JSON.parse(event.data);
-
-  //       switch (data.event) {
-  //         case "initial":
-  //           if (isMountedRef.current) setInventories(data.inventories || []);
-  //           break;
-
-  //         case "create":
-  //           if (isMountedRef.current) {
-  //             setInventories(prev => {
-  //               if (prev.some(i => i.id === data.inventory.id)) return prev;
-  //               return [...prev, data.inventory];
-  //             });
-  //             refetchShareUsers();
-  //             toast.success(data.inventory.owner !== currentUser
-  //               ? `New item shared by ${data.inventory.owner}!`
-  //               : "New item created!");
-  //           }
-  //           break;
-
-  //         case "update":
-  //           if (isMountedRef.current) {
-  //             setInventories(prev => {
-  //               const index = prev.findIndex(i => i.id === data.inventory.id);
-  //               if (index !== -1) {
-  //                 const newArr = [...prev];
-  //                 newArr[index] = { ...newArr[index], ...data.inventory };
-  //                 return newArr;
-  //               } else {
-  //                 return [...prev, data.inventory];
-  //               }
-  //             });
-  //             toast.success("Inventory updated!");
-  //           }
-  //           break;
-
-  //         case "delete":
-  //           if (isMountedRef.current) {
-  //             setInventories(prev => prev.filter(i => i.id !== data.inventory_id));
-  //             refetchShareUsers();
-  //             toast.success("Item removed");
-  //           }
-  //           break;
-
-  //         case "share_update":
-  //           refetchShareUsers();
-  //           toast.success("Share list updated");
-  //           break;
-
-  //         case "error":
-  //           toast.error(data.message || "Access denied");
-  //           break;
-
-  //         default:
-  //           console.log("Unknown event:", data);
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to parse WS message:", err);
-  //     }
-  //   };
-
-  //   ws.onerror = (error) => console.error("WebSocket error:", error);
-
-  //   ws.onclose = (event) => {
-  //     console.log("WebSocket closed", event.code, event.reason);
-  //     if (isMountedRef.current && event.code !== 1000) {
-  //       setTimeout(setupWebSocket, 3000);
-  //     }
-  //   };
-
-  //   return ws;
-  // };
-
   const setupWebSocket = () => {
     if (!token || !currentUser) return;
 
@@ -143,7 +54,7 @@ function Share() {
         const data = JSON.parse(event.data);
 
         switch (data.event) {
-          // ------------------- INITIAL LOAD -------------------
+          
           case "initial":
             if (isMountedRef.current) {
               setInventories(data.inventories || []);
@@ -283,6 +194,8 @@ function Share() {
     }
   };
 
+  // delete
+
   const handleDelete = async (id) => {
     toast(
       (t) => (
@@ -317,15 +230,37 @@ function Share() {
   };
 
   const handleDeleteShareUser = async (id) => {
-    if (!window.confirm("Are you sure you want to remove this user?")) return;
-
-    try {
-      await deleteShareInventory(id).unwrap();
-      refetchShareUsers();
-      toast.success("User removed successfully");
-    } catch (err) {
-      toast.error(err.data?.detail || "Failed to remove user");
-    }
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <span>Are you sure you want to delete this user?</span>
+          <div className="flex gap-2 justify-end">
+            <button
+              className="bg-gray-200 px-3 py-1 rounded"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await deleteShareInventory(id).unwrap();
+                  refetchShareUsers();
+                  toast.success("User removed successfully");
+                } catch (error) {
+                  toast.error(error.message);
+                }
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity }
+    );
   };
 
   const handleKeyPress = (e) => {
@@ -338,7 +273,6 @@ function Share() {
   };
   const closeModal = () => setIsOpen(false);
 
-  // -------------------- Render --------------------
   return (
     <div className="p-4 max-w-6xl mx-auto">
       <Toaster />

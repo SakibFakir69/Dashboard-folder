@@ -42,6 +42,8 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md")); // < 900px
 
+  console.log(inventoryData)
+
   // Process category data when it loads
   useEffect(() => {
     if (allCategory && Array.isArray(allCategory)) {

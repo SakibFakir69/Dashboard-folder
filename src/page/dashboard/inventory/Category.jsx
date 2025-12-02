@@ -55,13 +55,38 @@ function Category() {
   // delete category
 
   const handleDeleteCategory = async (id) => {
-    try {
-      await deleteCategory(id).unwrap();
+
+     toast(
+      (t) => (
+        <div className="flex flex-col gap-2">
+          <span>Are you sure you want to delete this item?</span>
+          <div className="flex gap-2 justify-end">
+            <button
+              className="bg-gray-200 px-3 py-1 rounded"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                       await deleteCategory(id).unwrap();
       toast.success("Category deleted successfully");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete category");
-    }
+                } catch (error) {
+                  toast.error(error.message);
+                }
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity }
+    );
+   
   };
 
 

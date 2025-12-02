@@ -46,7 +46,7 @@ function Share() {
 
     ws.onopen = () => {
       console.log("WebSocket Connected →", currentUser);
-      toast.success("Live updates ON", { duration: 2000 });
+      toast.success("Live updates ON", { duration: 1000 });
     };
 
     ws.onmessage = (event) => {

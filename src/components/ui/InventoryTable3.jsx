@@ -20,8 +20,14 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { useForm, Controller } from "react-hook-form";
 import Modal from "react-modal";
 import Select from "react-select";
-import { useAllCategoryQuery, useOnUpdateInventoryMutation } from "../../redux/features/api";
-import { responsiveModalStylesInventory, selectStylesInventory } from "../../style/modal";
+import {
+  useAllCategoryQuery,
+  useOnUpdateInventoryMutation,
+} from "../../redux/features/api";
+import {
+  responsiveModalStylesInventory,
+  selectStylesInventory,
+} from "../../style/modal";
 import toast from "react-hot-toast";
 
 const priorityOptions = [
@@ -35,21 +41,29 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [categoryOptions, setCategoryOptions] = useState([]);
 
-  const [updateInventory, { isLoading: updating }] = useOnUpdateInventoryMutation();
-  const { data: allCategory, isLoading: categoriesLoading } = useAllCategoryQuery();
-  const { register, handleSubmit, control, reset } = useForm();
+  const [updateInventory, { isLoading: updating }] =
+    useOnUpdateInventoryMutation();
+  const { data: allCategory, isLoading: categoriesLoading } =
+    useAllCategoryQuery();
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md")); // < 900px
 
-  console.log(inventoryData)
+  console.log(inventoryData);
 
   // Process category data when it loads
   useEffect(() => {
     if (allCategory && Array.isArray(allCategory)) {
-      const options = allCategory.map(cat => ({
+      const options = allCategory.map((cat) => ({
         value: cat.id, // UUID
-        label: cat.name || "Unnamed Category"
+        label: cat.name || "Unnamed Category",
       }));
       setCategoryOptions(options);
     }
@@ -58,91 +72,96 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
   // Helper function to safely get category name
   const getCategoryName = (item) => {
     if (!item || !item.category) return "—";
-    
+
     // If category is an object with name property
-    if (typeof item.category === 'object' && item.category !== null) {
+    if (typeof item.category === "object" && item.category !== null) {
       return item.category.name || "—";
     }
-    
+
     // If category is a string (could be name or ID)
-    if (typeof item.category === 'string') {
+    if (typeof item.category === "string") {
       // Check if it looks like a UUID
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (uuidRegex.test(item.category)) {
         // It's a UUID, try to find the name in categories
-        const foundCat = allCategory?.find(cat => cat.id === item.category);
+        const foundCat = allCategory?.find((cat) => cat.id === item.category);
         return foundCat?.name || "—";
       }
       // It's already a name
       return item.category;
     }
-    
+
     return "—";
   };
 
   // Get category option for react-select
   const getCategoryOption = (item) => {
     if (!item || !item.category) return null;
-    
+
     // If category is an object with id and name
-    if (typeof item.category === 'object' && item.category !== null) {
+    if (typeof item.category === "object" && item.category !== null) {
       return {
         value: item.category.id || item.category,
-        label: item.category.name || "Unnamed Category"
+        label: item.category.name || "Unnamed Category",
       };
     }
-    
+
     // If category is a string
-    if (typeof item.category === 'string') {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      
+    if (typeof item.category === "string") {
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
       if (uuidRegex.test(item.category)) {
         // It's a UUID
-        const foundCat = allCategory?.find(cat => cat.id === item.category);
+        const foundCat = allCategory?.find((cat) => cat.id === item.category);
         if (foundCat) {
           return {
             value: foundCat.id,
-            label: foundCat.name || "Unnamed Category"
+            label: foundCat.name || "Unnamed Category",
           };
         }
         // UUID not found in categories
         return {
           value: item.category,
-          label: "Unknown Category"
+          label: "Unknown Category",
         };
       } else {
         // It's a category name, find the ID
-        const foundCat = allCategory?.find(cat => cat.name === item.category);
+        const foundCat = allCategory?.find((cat) => cat.name === item.category);
         if (foundCat) {
           return {
             value: foundCat.id,
-            label: foundCat.name
+            label: foundCat.name,
           };
         }
         // Category name not found
         return {
           value: "", // Empty value to indicate error
-          label: item.category
+          label: item.category,
         };
       }
     }
-    
+
     return null;
   };
 
   const handleEditOpen = (item) => {
     if (!item) return;
-    
+
     setEditItem(item);
-    
+    console.log(item, "edit item");
+
     // Reset form and set values
     reset({
-      name: item.name || "",
+      name: item?.name || "",
       number: item.number || item.total_inventory || "",
-      priority: priorityOptions.find(p => p.value === item.priority) || priorityOptions[1], // Default to Medium
-      category: getCategoryOption(item)
+      priority:
+        priorityOptions.find((p) => p.value === item.priority) ||
+        priorityOptions[1], // Default to Medium
+      category: getCategoryOption(item),
     });
-    
+
     setModalIsOpen(true);
   };
 
@@ -164,7 +183,8 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
 
     // Only include category if it's selected and has a valid UUID value
     if (data.category?.value) {
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       if (uuidRegex.test(data.category.value)) {
         payload.category = data.category.value; // Send UUID
       } else {
@@ -177,20 +197,26 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
     }
 
     try {
-      await updateInventory({ 
-        id: editItem.id, 
-        ...payload 
+      await updateInventory({
+        id: editItem.id,
+        ...payload,
       }).unwrap();
-      
+
       toast.success("Item updated successfully!");
       handleEditClose();
     } catch (err) {
       console.error("Update error:", err);
-      
+
       // Better error messages
       if (err.data) {
         if (err.data.category) {
-          toast.error(`Category error: ${Array.isArray(err.data.category) ? err.data.category[0] : err.data.category}`);
+          toast.error(
+            `Category error: ${
+              Array.isArray(err.data.category)
+                ? err.data.category[0]
+                : err.data.category
+            }`
+          );
         } else if (err.data.detail) {
           toast.error(err.data.detail);
         } else {
@@ -228,14 +254,21 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
             <Paper key={item.id} elevation={3} className="p-5 rounded-xl">
               <Box className="flex justify-between items-start mb-3">
                 <Box>
-                  <Typography variant="subtitle1" className="font-bold text-blue-700">
+                  <Typography
+                    variant="subtitle1"
+                    className="font-bold text-blue-700"
+                  >
                     #{index + 1} • {item.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {getCategoryName(item)}
                   </Typography>
                   {showOwner && item.user && (
-                    <Typography variant="caption" color="text.secondary" className="block mt-1">
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      className="block mt-1"
+                    >
                       Owner: {item.user}
                     </Typography>
                   )}
@@ -267,7 +300,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                 </div>
                 <div>
                   <Typography className="text-gray-500">Quantity</Typography>
-                  <Typography className="font-bold">{item.number || item.total_inventory || 0}</Typography>
+                  <Typography className="font-bold">
+                    {item.number || item.total_inventory || 0}
+                  </Typography>
                 </div>
               </Box>
             </Paper>
@@ -282,7 +317,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
           ariaHideApp={false}
         >
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Edit Inventory Item</h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Edit Inventory Item
+            </h2>
             <button
               onClick={handleEditClose}
               className="text-gray-500 hover:text-red-600 text-3xl font-light"
@@ -290,28 +327,27 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
               ×
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <TextField 
-              label="Name" 
-              {...register("name", { required: true })} 
-              fullWidth 
+            <TextField
+              label="Name"
+              {...register("name", { required: true })}
+              fullWidth
               required
-              error={!register("name").required}
-            
+              error={!!errors.name}
+              helperText={errors.name ? "Name is required" : ""}
             />
             <p></p>
-            
-            <TextField 
-     
-              label="Quantity" 
-              type="number" 
-              {...register("number", { 
-                required: true, 
+
+            <TextField
+              label="Quantity"
+              type="number"
+              {...register("number", {
+                required: true,
                 min: 0,
-                valueAsNumber: true 
-              })} 
-              fullWidth 
+                valueAsNumber: true,
+              })}
+              fullWidth
               required
               InputProps={{ inputProps: { min: 0 } }}
             />
@@ -334,7 +370,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                       isClearable
                     />
                     {fieldState.error && (
-                      <p className="text-red-500 text-xs mt-1">Priority is required</p>
+                      <p className="text-red-500 text-xs mt-1">
+                        Priority is required
+                      </p>
                     )}
                   </>
                 )}
@@ -360,7 +398,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                 )}
               />
               <p className="text-gray-500 text-xs mt-1">
-                {categoryOptions.length === 0 ? "No categories available" : "Leave empty to remove category"}
+                {categoryOptions.length === 0
+                  ? "No categories available"
+                  : "Leave empty to remove category"}
               </p>
             </div>
 
@@ -369,24 +409,25 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                 <p className="text-gray-600">Item ID: {editItem.id}</p>
                 {editItem.created_at && (
                   <p className="text-gray-600">
-                    Created: {new Date(editItem.created_at).toLocaleDateString()}
+                    Created:{" "}
+                    {new Date(editItem.created_at).toLocaleDateString()}
                   </p>
                 )}
               </div>
             )}
 
             <div className="flex justify-end gap-3 pt-6 border-t">
-              <Button 
-                variant="outlined" 
-                color="error" 
+              <Button
+                variant="outlined"
+                color="error"
                 onClick={handleEditClose}
                 disabled={updating}
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
+              <Button
+                type="submit"
+                variant="contained"
                 color="primary"
                 disabled={updating}
               >
@@ -408,11 +449,23 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
             <TableRow>
               <TableCell className="!font-bold text-gray-700">ID</TableCell>
               <TableCell className="!font-bold text-gray-700">Name</TableCell>
-              <TableCell className="!font-bold text-gray-700">Category</TableCell>
-              {showOwner && <TableCell className="!font-bold text-gray-700">Owner</TableCell>}
-              <TableCell className="!font-bold text-gray-700">Priority</TableCell>
-              <TableCell className="!font-bold text-gray-700">Quantity</TableCell>
-              <TableCell className="!font-bold text-gray-700">Actions</TableCell>
+              <TableCell className="!font-bold text-gray-700">
+                Category
+              </TableCell>
+              {showOwner && (
+                <TableCell className="!font-bold text-gray-700">
+                  Owner
+                </TableCell>
+              )}
+              <TableCell className="!font-bold text-gray-700">
+                Priority
+              </TableCell>
+              <TableCell className="!font-bold text-gray-700">
+                Quantity
+              </TableCell>
+              <TableCell className="!font-bold text-gray-700">
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -421,7 +474,11 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                 <TableCell>{index + 1}</TableCell>
                 <TableCell className="font-medium">{item.name}</TableCell>
                 <TableCell>{getCategoryName(item)}</TableCell>
-                {showOwner && <TableCell className="!text-yellow-500 !font-semibold">{item.user || "—"}</TableCell>}
+                {showOwner && (
+                  <TableCell className="!text-yellow-500 !font-semibold">
+                    {item.user || "—"}
+                  </TableCell>
+                )}
                 <TableCell>
                   <span
                     className={`font-bold ${
@@ -468,7 +525,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
         ariaHideApp={false}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Edit Inventory Item</h2>
+          <h2 className="text-2xl font-bold text-gray-800">
+            Edit Inventory Item
+          </h2>
           <button
             onClick={handleEditClose}
             className="text-gray-500 hover:text-red-600 text-3xl font-light"
@@ -476,27 +535,26 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
             ×
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <TextField 
-            label="Name" 
-            {...register("name", { required: true })} 
-            fullWidth 
+          <TextField
+            label="Name"
+            {...register("name", { required: true })}
+            fullWidth
             required
-            error={!register("name").required}
-          
+            error={!!register("name").required}
+            helperText={errors.name ? "Name is required" : ""}
           />
           <p></p>
-          <TextField 
-            label="Quantity" 
-            
-            type="number" 
-            {...register("number", { 
-              required: true, 
+          <TextField
+            label="Quantity"
+            type="number"
+            {...register("number", {
+              required: true,
               min: 0,
-              valueAsNumber: true 
-            })} 
-            fullWidth 
+              valueAsNumber: true,
+            })}
+            fullWidth
             required
             InputProps={{ inputProps: { min: 0 } }}
           />
@@ -519,7 +577,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
                     isClearable
                   />
                   {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">Priority is required</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      Priority is required
+                    </p>
                   )}
                 </>
               )}
@@ -545,7 +605,9 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
               )}
             />
             <p className="text-gray-500 text-xs mt-1">
-              {categoryOptions.length === 0 ? "No categories available" : "Leave empty to remove category"}
+              {categoryOptions.length === 0
+                ? "No categories available"
+                : "Leave empty to remove category"}
             </p>
           </div>
 
@@ -561,17 +623,17 @@ function InventoryTable3({ inventoryData, onDelete, showOwner = false }) {
           )}
 
           <div className="flex justify-end gap-3 pt-6 border-t">
-            <Button 
-              variant="outlined" 
-              color="error" 
+            <Button
+              variant="outlined"
+              color="error"
               onClick={handleEditClose}
               disabled={updating}
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              variant="contained" 
+            <Button
+              type="submit"
+              variant="contained"
               color="primary"
               disabled={updating}
             >
